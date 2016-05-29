@@ -1,12 +1,27 @@
 #!/usr/bin/env python3
 
 import pygments
-from pygments import highlight
-from 
 
+from flask import Flask, render_template, url_for, request
 
-from flask import Flask, render_template, url_for
-from pygments.lexers import get_lexer_for_filename
-from pygments.formatters import HtmlFormatter
 
 app = Flask(__name__)
+
+lexer = 'txt' 
+ttl = 60
+
+@app.route('/', methods=['GET', 'POST'])
+def index():
+	
+	if request.method == 'POST':
+		if request.form['lexer']:
+			lexer = request.form['lexer']
+		if request.form['ttl']:
+			ttl = int(request.form['ttl'])
+
+	return render_template('index.html')
+
+
+if __name__ == '__main__':
+	app.debug = True
+	app.run(host='0.0.0.0')
