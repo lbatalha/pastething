@@ -2,9 +2,9 @@
 {% block title %}New Paste{% endblock %}
 {% block head %}{% endblock %}
 {% block wrapper %}
-	<form id='pasteform'>
+	<form id='pasteform' method='post' action="/">
 		<div id='content'>
-			<textarea id='pastebox' form='pasteform' dirname='pastebox.dir' required></textarea>
+			<textarea id='pastebox' name='paste' form='pasteform' dirname='pastebox.dir' required></textarea>
 		</div>
 
 		<div id='controls'>
@@ -14,7 +14,7 @@
 				<option value='py'>Python</option>
 				<option value='html'>HTML</option>
 			</select>
-			<select name='expiry'>
+			<select name='ttl'>
 				<option value='60'>1 min</option>
 				<option value='600'>10 min</option>
 			</select>
