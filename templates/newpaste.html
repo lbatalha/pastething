@@ -1,0 +1,26 @@
+{% extends 'layout.html' %}
+{% block title %}New Paste{% endblock %}
+{% block head %}{% endblock %}
+{% block wrapper %}
+	<form id='pasteform'>
+		<div id='content'>
+			<textarea id='pastebox' form='pasteform' dirname='pastebox.dir' required></textarea>
+		</div>
+
+		<div id='controls'>
+			<table>
+			<select name='lexer'>
+				<option value='txt' selected>Text Only</option>
+				<option value='py'>Python</option>
+				<option value='html'>HTML</option>
+			</select>
+			<select name='expiry'>
+				<option value='60'>1 min</option>
+				<option value='600'>10 min</option>
+			</select>
+
+			<input type='submit' value='Paste'>
+			</table>
+		</div>
+	</form>
+{% endblock %}
