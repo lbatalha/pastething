@@ -3,8 +3,11 @@
 import random
 
 #----
-
 import pygments
+from pygments import highlight
+from pygments.lexers import get_lexer_by_name
+from pygments.formatters import HtmlFormatter
+
 from flask import Flask, render_template, url_for, request, abort, redirect
 
 app = Flask(__name__)
@@ -14,7 +17,7 @@ ttl = 60
 
 rng = random.SystemRandom()
 
-url_len = 4
+url_len = 1
 alphabet = tuple("23456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz")
 base = len(alphabet)
 
@@ -29,7 +32,6 @@ def base_encode(num):
 
 @app.route('/', methods=['GET', 'POST'])
 def newpaste():
-	
 	if request.method == 'POST':
 		paste = None
 		if 'paste' in request.form and request.form['paste']:
@@ -40,20 +42,39 @@ def newpaste():
 			lexer = request.form['lexer']
 		if request.form['ttl']:
 			ttl = int(request.form['ttl'])
+		
 		print(ttl)
 		print(lexer)
 		print(paste)
-		url = ''
-		for i in range(url_len):
-			url += base_encode(rng.getrandbits(6))
+
+		collision = True
+		while collision:
+			url = ''
+			for i in range(url_len):
+				url += base_encode(rng.getrandbits(6))
+			collision = None
+			#url_len += 1
+			##placeholder for collision check
 		print(url)
 	
 	return render_template('newpaste.html')
 
-@app.route('/<uri>', methods=['GET'])
+@app.route('/paste', methods=['GET'])
 def viewpaste():
 	if request.method == 'GET':
-		return render_template('viewpaste.html', paste = paste)
+		paste = ''
+		with open('main.py', 'r') as fp:
+			paste = fp.read()
+			fp.close()
+		
+		try:
+			lexer = get_lexer_by_name('python')
+			formatter = HtmlFormatter(linenos=True, cssclass='paste')
+			result = highlight(paste, lexer, formatter)
+		except pygments.util.ClassNotFound:
+			result = paste
+		print(len(result))
+		return render_template('viewpaste.html', paste = result)
 
 if __name__ == '__main__':
 	app.debug = True

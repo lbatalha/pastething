@@ -1,13 +1,10 @@
 {% extends 'layout.html' %}
+
 {% block title %}Paste{% endblock %}
-{% block head %}{% endblock %}
 {% block wrapper %}
 
 <div id='content'>
-<table></table>
-
-
-
+{{ paste|safe }}
 </div>
 
 {% endblock %}
