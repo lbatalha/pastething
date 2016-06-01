@@ -1,16 +1,17 @@
 #!/usr/bin/env python3
 
 import random
-
+from base64 import urlsafe_b64encode
 #----
 import pygments
 from pygments import highlight
 from pygments.lexers import get_lexer_by_name
 from pygments.formatters import HtmlFormatter
 
-from flask import Flask, render_template, url_for, request, abort, redirect
+from flask import Flask, flash, render_template, url_for, request, abort, redirect
 
 app = Flask(__name__)
+app.secret_key = 'some_secret'
 
 lexer = 'txt'
 ttl = 60
@@ -56,7 +57,8 @@ def newpaste():
 			#url_len += 1
 			##placeholder for collision check
 		print(url)
-	
+		flash(urlsafe_b64encode(rng.getrandbits(48).to_bytes(6, 'little')))
+		return redirect(url_for('viewpaste'))
 	return render_template('newpaste.html')
 
 @app.route('/paste', methods=['GET'])
@@ -65,14 +67,14 @@ def viewpaste():
 		paste = ''
 		with open('main.py', 'r') as fp:
 			paste = fp.read()
-			fp.close()
-		
+			fp.close()	
 		try:
 			lexer = get_lexer_by_name('python')
 			formatter = HtmlFormatter(linenos=True, cssclass='paste')
 			result = highlight(paste, lexer, formatter)
 		except pygments.util.ClassNotFound:
 			result = paste
+		
 		print(len(result))
 		return render_template('viewpaste.html', paste = result)
 
