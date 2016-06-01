@@ -1,9 +1,58 @@
-#content {
-	background-color: black;
+@font-face {
+	font-family: 'Droid Sans Mono';
+	src: url('/static/fonts/DroidSansMono.ttf');
 }
+@font-face {
+	font-family: 'Droid Sans';
+	src: url('/static/fonts/DroidSans.ttf');
+}
+
+body {
+	background-color: #171812;
+}
+
 a:link{ color: #1975FF}
 a:visited{ color: #1975FF}
 a:hover{ color: #4791FF}
+
+.linenos { 
+	color: #888481;
+	padding: 0 1em 0 0.5em;
+}
+
+#content {
+	background-color: #272822;
+
+}
+
+#header {
+	display: flex;
+	flex-direction: row;
+	flex-wrap: nowrap;
+	justify-content: space-between;
+	align-items: center;
+	height: 50px;
+	padding: 5px;
+	font-family: 'Droid Sans';
+	font-size: 1em;
+
+}
+
+#logo {
+	color: #e6db74;
+
+}
+
+#nav {
+	
+}
+
+#info {
+	border: 1px;
+	border-color: #272822;
+	height: 20px;
+
+}
 
 .hll { background-color: #49483e }
 .c { color: #75715e } /* Comment */
