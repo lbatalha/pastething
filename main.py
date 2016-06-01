@@ -64,19 +64,19 @@ def newpaste():
 @app.route('/paste', methods=['GET'])
 def viewpaste():
 	if request.method == 'GET':
-		paste = ''
+		text = ''
 		with open('main.py', 'r') as fp:
 			paste = fp.read()
-			fp.close()	
+			fp.close()
+		
 		try:
 			lexer = get_lexer_by_name('python')
 			formatter = HtmlFormatter(linenos=True, cssclass='paste')
-			result = highlight(paste, lexer, formatter)
+			paste = highlight(paste, lexer, formatter)
 		except pygments.util.ClassNotFound:
-			result = paste
+			paste = text
 		
-		print(len(result))
-		return render_template('viewpaste.html', paste = result)
+		return render_template('viewpaste.html', paste = paste)
 
 if __name__ == '__main__':
 	app.debug = True
