@@ -3,7 +3,7 @@
 import random
 from base64 import urlsafe_b64encode
 
-from textwrap import TextWrapper
+import textwrap
 #------------------------------------------------------------------------------------------------------------
 import pygments
 from pygments import highlight
@@ -73,14 +73,14 @@ def viewpaste():
 			fp.close()
 
 		direction = 'ltr'
-		if request.args.get('rtl') is not None:
+		if request.args.get('d') is not None:
 			direction = 'rtl'
-		print(request.args.get('rtl'))
+		print(request.args.get('d'))
 
 		wrap = False
-		if request.args.get('wrap') is not None:
-			paste = ''.join(textwrap.wrap(paste, width=80))
-		print(request.args.get('wrap'))
+		if request.args.get('w') is not None:
+			paste = '\n'.join(textwrap.wrap(paste, replace_whitespace=False, width=80))
+		print(request.args.get('w'))
 
 		text = ''
 
