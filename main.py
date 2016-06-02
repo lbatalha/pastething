@@ -2,38 +2,42 @@
 
 import random
 from base64 import urlsafe_b64encode
-#----
+
+from textwrap import TextWrapper
+#------------------------------------------------------------------------------------------------------------
 import pygments
 from pygments import highlight
 from pygments.lexers import get_lexer_by_name
 from pygments.formatters import HtmlFormatter
 
-from flask import Flask, flash, render_template, url_for, request, abort, redirect
+from flask import Flask
+from flask import render_template, url_for, flash
+from flask import request, redirect, abort
 
 app = Flask(__name__)
 app.secret_key = 'some_secret'
 
-lexer = 'txt'
-ttl = 60
 
 rng = random.SystemRandom()
-
+lexer = 'txt'
+ttl = 60
 url_len = 1
-alphabet = tuple("23456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz")
-base = len(alphabet)
+url_alph = tuple("23456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz")
+base = len(url_alph)
 
 def base_encode(num):
 	if not num:
-		return alphabet[0]
+		return url_alph[0]
 	result = ''
 	while num:
 		num, rem = divmod(num, base)
-		result = result.join(alphabet[rem])
+		result = result.join(url_alph[rem])
 	return result
 
 @app.route('/', methods=['GET', 'POST'])
 def newpaste():
 	if request.method == 'POST':
+
 		paste = None
 		if 'paste' in request.form and request.form['paste']:
 			paste = request.form['paste']
@@ -64,10 +68,22 @@ def newpaste():
 @app.route('/paste', methods=['GET'])
 def viewpaste():
 	if request.method == 'GET':
-		text = ''
 		with open('main.py', 'r') as fp:
 			paste = fp.read()
 			fp.close()
+
+		direction = 'ltr'
+		if request.args.get('rtl') is not None:
+			direction = 'rtl'
+		print(request.args.get('rtl'))
+
+		wrap = False
+		if request.args.get('wrap') is not None:
+			paste = ''.join(textwrap.wrap(paste, width=80))
+		print(request.args.get('wrap'))
+
+		text = ''
+
 		
 		try:
 			lexer = get_lexer_by_name('python')
@@ -76,7 +92,7 @@ def viewpaste():
 		except pygments.util.ClassNotFound:
 			paste = text
 		
-		return render_template('viewpaste.html', paste = paste)
+		return render_template('viewpaste.html', paste=paste, direction=direction)
 
 if __name__ == '__main__':
 	app.debug = True

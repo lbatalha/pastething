@@ -9,19 +9,39 @@
 
 body {
 	background-color: #171812;
+	margin: auto;
+
 }
 
-a:link{ color: #1975FF}
-a:visited{ color: #1975FF}
-a:hover{ color: #4791FF}
+#maindiv {
+	display: flex;
+	flex-direction: column;
+	flex-wrap: nowrap;
+	justify-content: stretch;
+	align-items: center;
+	max-width: 90ch;
+	margin: auto;
+
+}
+a { text-decoration: none; }
+a:link{ color: #f8f8f2}
+a:visited{ color: #f8f8f2}
+a:hover{ color: #e6db74}
 
 .linenos { 
 	color: #888481;
 	padding: 0 1em 0 0.5em;
 }
+#wrapper {
+	width: 100%;
+	border: 0px solid;
+
+}
+
 
 #content {
 	background-color: #272822;
+
 
 }
 
@@ -31,26 +51,34 @@ a:hover{ color: #4791FF}
 	flex-wrap: nowrap;
 	justify-content: space-between;
 	align-items: center;
-	height: 50px;
-	padding: 5px;
-	font-family: 'Droid Sans';
-	font-size: 1em;
+	margin-bottom: 0.1em;
+	width: 100%;
+	height: 2em;
+	font-family: 'Droid Sans', monospace;
+	font-size: 1.25em;
+	
+
 
 }
 
 #logo {
 	color: #e6db74;
+	padding: 0.5em;
+	
 
 }
 
 #nav {
-	
+	font-family: 'Droid Sans', monospace;
+	font-size: 0.75em;
+	word-spacing: 2ch;
+	padding: 0.5em;
 }
 
 #info {
-	border: 1px;
+	border: 3px solid;
 	border-color: #272822;
-	height: 20px;
+	height: 1.5em;
 
 }
 
