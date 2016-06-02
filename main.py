@@ -12,7 +12,7 @@ from pygments.formatters import HtmlFormatter
 
 from flask import Flask
 from flask import render_template, url_for, flash
-from flask import request, redirect, abort
+from flask import request, redirect, Response, abort
 
 app = Flask(__name__)
 app.secret_key = 'some_secret'
@@ -72,6 +72,11 @@ def viewpaste():
 			paste = fp.read()
 			fp.close()
 
+		if request.args.get('raw') is not None:
+			resp = Response(paste)
+			resp.headers['Content-Type'] = 'text/plain; charset=utf-8'
+			return resp
+
 		direction = 'ltr'
 		if request.args.get('d') is not None:
 			direction = 'rtl'
@@ -84,7 +89,6 @@ def viewpaste():
 
 		text = ''
 
-		
 		try:
 			lexer = get_lexer_by_name('python')
 			formatter = HtmlFormatter(linenos=True, cssclass='paste')
