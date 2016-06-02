@@ -7,6 +7,7 @@
     {% endblock %}
 </head>
 <body>
+    <div id='maindiv'>
     <div id='header'>
         <div id='logo'>
             pastething
@@ -19,7 +20,7 @@
         </div>
     </div>
 
-    <div id='wrapper'>
+    <div id='wrapper' dir='{{ direction }}'>
         {% block wrapper %}{% endblock %}
     </div>
 
@@ -27,6 +28,7 @@
         {% block footer %}
         &copy; Copyright 2016 pastething
         {% endblock %}
+    </div>
     </div>
 </body>
 </html>
