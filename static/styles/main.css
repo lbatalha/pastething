@@ -39,13 +39,6 @@ a:hover{ color: #e6db74}
 
 }
 
-
-#content {
-	background-color: #272822;
-
-
-}
-
 #header {
 	display: flex;
 	flex-direction: row;
@@ -57,15 +50,11 @@ a:hover{ color: #e6db74}
 	height: 2em;
 	font-family: 'Droid Sans', monospace;
 	font-size: 1.25em;
-	
-
-
-}
+}	
 
 #logo {
 	color: #e6db74;
 	padding: 0.5em;
-	
 
 }
 
@@ -89,6 +78,28 @@ a:hover{ color: #e6db74}
 	color: #888481;
 	font-size: 0.75em;
 }
+
+#content {
+	background-color: #272822;
+
+}
+
+pre {
+    counter-reset: line;
+}
+
+*[id^='linespan-']{
+    counter-increment: line;
+}
+
+*[id^='linespan-']:before{
+	content: counter(line);
+	color: #888481;
+	padding: 0 1em 0 0.5em;
+	text-align: right;
+
+}
+
 
 .pipediv {
 	margin: 0 0.5em 0 0.5em;
