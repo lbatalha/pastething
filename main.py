@@ -108,12 +108,12 @@ def viewpaste():
 		text = paste
 		try:
 			lexer = get_lexer_by_name('python')
-			formatter = HtmlFormatter(linespans='linespan', linenos=False, cssclass='paste')
+			formatter = HtmlFormatter(nowrap=False, linenos=False, cssclass='paste')
 			paste = highlight(paste, lexer, formatter)
 		except pygments.util.ClassNotFound:
 			paste = text
 		
-		return render_template('viewpaste.html', stats=stats, paste=paste, direction=direction)
+		return render_template('viewpaste.html', stats=stats, paste=paste.split("\n"), direction=direction)
 
 if __name__ == '__main__':
 	app.debug = True

@@ -5,19 +5,23 @@
 {% block title %}Paste{% endblock %}
 {% block wrapper %}
 <div id='info'>
-{% with messages = get_flashed_messages() %}
- 	{% if messages %}
- 		{{ messages[0] }}
- 	{% endif %}
- 	<div id='lines'> {{ stats['lines'] }} lines</div>
- 	<div class='pipediv'>|</div>
- 	<div id='sloc'> ({{ stats['sloc'] }} sloc) </div>
- 	<div class='pipediv'>|</div>
- 	<div id='sloc'> {{ stats['size']/1000 }} kB</div>
-{% endwith %}
+	{% with messages = get_flashed_messages() %}
+	{% if messages %}
+	{{ messages[0] }}
+	{% endif %}
+	<div id='lines'> {{ stats['lines'] }} lines</div>
+	<div class='pipediv'>|</div>
+	<div id='sloc'> ({{ stats['sloc'] }} sloc) </div>
+	<div class='pipediv'>|</div>
+	<div id='sloc'> {{ stats['size']/1000 }} kB</div>
+	{% endwith %}
 </div>
 <div id='content'>
-{{ paste|safe }}
+	<ol>
+		{% for i in range(1,stats['lines']) %}
+		<li class='linenos'><pre class='pastelines'>{{paste[i]|safe}}</pre></li>
+		{% endfor %}
+	</ol>
 </div>
 
 {% endblock %}
