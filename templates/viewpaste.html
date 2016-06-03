@@ -9,6 +9,11 @@
  	{% if messages %}
  		{{ messages[0] }}
  	{% endif %}
+ 	<div id='lines'> {{ stats['lines'] }} lines</div>
+ 	<div class='pipediv'>|</div>
+ 	<div id='sloc'> ({{ stats['sloc'] }} sloc) </div>
+ 	<div class='pipediv'>|</div>
+ 	<div id='sloc'> {{ stats['size']/1000 }} kB</div>
 {% endwith %}
 </div>
 <div id='content'>
