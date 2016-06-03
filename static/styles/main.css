@@ -17,10 +17,14 @@ body {
 	display: flex;
 	flex-direction: column;
 	flex-wrap: nowrap;
-	justify-content: stretch;
+	justify-content: center;
 	align-items: center;
-	max-width: 90ch;
+	max-width: 120ch;
+	min-width: 80ch;
+	width: auto;
 	margin: auto;
+
+
 
 }
 a { text-decoration: none; }
@@ -33,7 +37,7 @@ a:hover{ color: #e6db74}
 	padding: 0 1em 0 0.5em;
 }
 #wrapper {
-	width: 100%;
+	width: auto;
 	border: 0px solid;
 	font-family: 'Droid Sans Mono', monospace;
 
@@ -49,7 +53,7 @@ a:hover{ color: #e6db74}
 	width: 100%;
 	height: 2em;
 	font-family: 'Droid Sans', monospace;
-	font-size: 1.25em;
+	font-size: 150%;
 }	
 
 #logo {
@@ -97,7 +101,7 @@ pre {
 	color: #888481;
 	padding: 0 1em 0 0.5em;
 	text-align: right;
-
+	width: 3.5em;
 }
 
 
