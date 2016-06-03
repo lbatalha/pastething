@@ -32,10 +32,7 @@ a:link{ color: #f8f8f2}
 a:visited{ color: #f8f8f2}
 a:hover{ color: #e6db74}
 
-.linenos { 
-	color: #888481;
-	padding: 0 1em 0 0.5em;
-}
+
 #wrapper {
 	width: auto;
 	border: 0px solid;
@@ -82,31 +79,24 @@ a:hover{ color: #e6db74}
 	color: #888481;
 	font-size: 0.75em;
 }
+.pipediv {
+	margin: 0 0.5em 0 0.5em;
+}
 
 #content {
 	background-color: #272822;
 
 }
 
-pre {
-    counter-reset: line;
-}
-
-*[id^='linespan-']{
-    counter-increment: line;
-}
-
-*[id^='linespan-']:before{
-	content: counter(line);
+.linenos { 
+	list-style: decimal;
 	color: #888481;
-	padding: 0 1em 0 0.5em;
-	text-align: right;
-	width: 3.5em;
+	padding: 0 1ch 0 2ch;
+	
 }
 
+.pastelines {
 
-.pipediv {
-	margin: 0 0.5em 0 0.5em;
 }
 
 .hll { background-color: #49483e }
