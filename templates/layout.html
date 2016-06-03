@@ -1,34 +1,35 @@
 <!DOCTYPE html>
 <html>
-<head>
-    {% block head %}
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles/main.css') }}">
-    <title>{% block title %}{% endblock %} - pastething</title>
-    {% endblock %}
-</head>
-<body>
-    <div id='maindiv'>
-    <div id='header'>
-        <div id='logo'>
-            pastething
-        </div>
-        {% block header %}{% endblock %}
-        <div id='nav'>
-            <a href="/about">Info</a>
-            <a href="/api">API</a>
-            <a href="/stats">Stats</a>
-        </div>
-    </div>
+	<head>
+		{% block head %}
+		<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles/main.css') }}">
+		<title>{% block title %}{% endblock %} - pastething</title>
+		{% endblock %}
+	</head>
+	<body>
+		<div id='maindiv'>
+			<div id='wrapper' dir='{{ direction }}'>
+				<div id='header'>
+					<div id='logo'>
+						pastething
+					</div>
+					{% block header %}{% endblock %}
+					<div id='nav'>
+						<a href="/about">Info</a>
+						<a href="/api">API</a>
+						<a href="/stats">Stats</a>
+					</div>
+				</div>
 
-    <div id='wrapper' dir='{{ direction }}'>
-        {% block wrapper %}{% endblock %}
-    </div>
 
-    <div id="footer">
-        {% block footer %}
-        &copy; Copyright 2016 pastething
-        {% endblock %}
-    </div>
-    </div>
-</body>
+				{% block wrapper %}{% endblock %}
+			</div>
+
+			<div id="footer">
+				{% block footer %}
+				&copy; Copyright 2016 pastething
+				{% endblock %}
+			</div>
+		</div>
+	</body>
 </html>
