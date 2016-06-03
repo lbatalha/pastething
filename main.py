@@ -1,10 +1,14 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 
 import random
+import mmap
 from base64 import urlsafe_b64encode
 
 import textwrap
+
 #------------------------------------------------------------------------------------------------------------
+
 import pygments
 from pygments import highlight
 from pygments.lexers import get_lexer_by_name
@@ -17,8 +21,9 @@ from flask import request, redirect, Response, abort
 app = Flask(__name__)
 app.secret_key = 'some_secret'
 
-
 rng = random.SystemRandom()
+
+plain_useragents = ('curl','wget', None)
 lexer = 'txt'
 ttl = 60
 url_len = 1
@@ -33,6 +38,19 @@ def base_encode(num):
 		num, rem = divmod(num, base)
 		result = result.join(url_alph[rem])
 	return result
+
+def plain(text):
+	resp = Response(text)
+	resp.headers['Content-Type'] = 'text/plain; charset=utf-8'
+	return resp
+
+def paste_stats(text):
+	stats = {}
+	stats['lines'] = len(text.split('\n'))
+	stats['sloc'] = stats['lines'] - len(text.split('\n\n'))
+	stats['size'] = len(text.encode('utf-8'))
+	return stats
+
 
 @app.route('/', methods=['GET', 'POST'])
 def newpaste():
@@ -72,23 +90,24 @@ def viewpaste():
 			paste = fp.read()
 			fp.close()
 
-		if request.args.get('raw') is not None:
-			resp = Response(paste)
-			resp.headers['Content-Type'] = 'text/plain; charset=utf-8'
-			return resp
+		stats = paste_stats(paste)
+
+		user_agent = request.user_agent.browser
+		for ua in plain_useragents:
+			if user_agent == ua:
+				return plain(paste)
+		if request.args.get('plain') is not None:
+				return plain(paste)
 
 		direction = 'ltr'
 		if request.args.get('d') is not None:
 			direction = 'rtl'
-		print(request.args.get('d'))
 
 		wrap = False
 		if request.args.get('w') is not None:
-			paste = '\n'.join(textwrap.wrap(paste, replace_whitespace=False, width=80))
-		print(request.args.get('w'))
+			wrap = True
 
-		text = ''
-
+		text = paste
 		try:
 			lexer = get_lexer_by_name('python')
 			formatter = HtmlFormatter(linenos=True, cssclass='paste')
@@ -96,7 +115,7 @@ def viewpaste():
 		except pygments.util.ClassNotFound:
 			paste = text
 		
-		return render_template('viewpaste.html', paste=paste, direction=direction)
+		return render_template('viewpaste.html', stats = stats, paste=paste, direction=direction)
 
 if __name__ == '__main__':
 	app.debug = True
