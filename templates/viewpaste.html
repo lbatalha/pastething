@@ -1,24 +1,53 @@
 {% extends 'layout.html' %}
 {% block head %}
 {{ super() }}
+<script>
+function wrap() {
+	var content = document.getElementById('content').style.whiteSpace;
+	if( document.getElementById('content').style.whiteSpace == 'pre'){
+		content = 'pre-wrap';
+	}else{
+		content = 'pre-wrap';
+	}
+}
+//document.getElementById('content').style.white-space: pre-wrap;
+</script>
 {% endblock %}
 {% block title %}Paste{% endblock %}
 {% block wrapper %}
 <div id='info'>
-	{% with messages = get_flashed_messages() %}
-	{% if messages %}
-	{{ messages[0] }}
+	
+
+	<div id='raw'><a href="?r">raw</a></div>
+	<div class='pipediv'>|</div>
+
+	<div id='wrap'><a href="{{ request.path }}" onclick="wrap();return false;">wrap</a></div>
+	
+	<div class='pipediv'>|</div>
+	{% if '?d' in request.path %}
+	<div id='dir'><a href="?d">[dir]</a></div>
+	{% else %}
+	<div id='dir'><a href="?d">dir</a></div>
 	{% endif %}
+	<div class='pipediv'>|</div>
+
+	<div id='lexer'> {{ stats['lexer'] }} </div>
+	<div class='pipediv'>|</div>
 	<div id='lines'> {{ stats['lines'] }} lines</div>
 	<div class='pipediv'>|</div>
-	<div id='sloc'> ({{ stats['sloc'] }} sloc) </div>
+	<div id='sloc'> {{ stats['sloc'] }} sloc </div>
 	<div class='pipediv'>|</div>
 	<div id='sloc'> {{ stats['size']/1000 }} kB</div>
+	{% with messages = get_flashed_messages() %}
+	{% if messages %}
+	<div class='pipediv'>|</div>
+	<div id='token'>Token: {{ messages[0] }}</div>
+	{% endif %}
 	{% endwith %}
 </div>
 <div id='content'>
 	<ol>
-		{% for i in range(1,stats['lines']) %}
+		{% for i in range(stats['lines']) %}
 		<li class='linenos'><pre class='pastelines'>{{paste[i]|safe}}</pre></li>
 		{% endfor %}
 	</ol>
