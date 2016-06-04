@@ -14,17 +14,9 @@ body {
 }
 
 #maindiv {
-	display: flex;
-	flex-direction: column;
-	flex-wrap: nowrap;
-	justify-content: center;
-	align-items: center;
-	max-width: 120ch;
+	max-width: 90ch;
 	min-width: 80ch;
-	width: auto;
 	margin: auto;
-
-
 
 }
 a { text-decoration: none; }
@@ -35,8 +27,7 @@ a:hover{ color: #e6db74}
 
 #wrapper {
 	width: auto;
-	border: 0px solid;
-	font-family: 'Droid Sans Mono', monospace;
+	font-family: monospace;
 
 }
 
@@ -49,7 +40,7 @@ a:hover{ color: #e6db74}
 	margin-bottom: 0.1em;
 	width: 100%;
 	height: 2em;
-	font-family: 'Droid Sans', monospace;
+	font-family: monospace;
 	font-size: 150%;
 }	
 
@@ -60,7 +51,7 @@ a:hover{ color: #e6db74}
 }
 
 #nav {
-	font-family: 'Droid Sans', monospace;
+	font-family: monospace;
 	font-size: 0.75em;
 	word-spacing: 2ch;
 	padding: 0.5em;
@@ -76,6 +67,7 @@ a:hover{ color: #e6db74}
 	border-color: #272822;
 	height: 1.5em;
 	padding: 0.3em;
+	padding-left: 5ch;
 	color: #888481;
 	font-size: 0.75em;
 }
@@ -85,17 +77,25 @@ a:hover{ color: #e6db74}
 
 #content {
 	background-color: #272822;
-
+	padding: 0.25em;
+	overflow-x: scroll;
+	
 }
 
 .linenos { 
 	list-style: decimal;
 	color: #888481;
-	padding: 0 1ch 0 2ch;
-	
+	line-height: 1.25em;
+	padding: 0;
+	margin: 0;
+	height: auto;
+
 }
 
 .pastelines {
+	white-space: pre;
+	padding: 0;
+	margin: 0;
 
 }
 

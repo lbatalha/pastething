@@ -2,7 +2,7 @@
 {% block title %}New Paste{% endblock %}
 {% block head %}{% endblock %}
 {% block wrapper %}
-	<form id='pasteform' method='post' action="/">
+	<form id='pasteform' method='post' enctype='multipart/form-data' action='/'>
 		<div id='content'>
 			<textarea id='pastebox' name='paste' form='pasteform' dirname='pastebox.dir' required></textarea>
 		</div>
