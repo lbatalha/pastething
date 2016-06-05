@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import random
+from random import getrandbits
 from base64 import urlsafe_b64encode
 
 #-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -66,13 +66,13 @@ def newpaste():
 		collision = True
 		while collision:
 			url = ''
-			for i in range(url_len):
-				url += base_encode(rng.getrandbits(6))
+			for i in range(config.url_len):
+				url += base_encode(getrandbits(6))
 			collision = None
 			#url_len += 1
 			##placeholder for collision check
 		print(url)
-		flash(urlsafe_b64encode(random.getrandbits(48).to_bytes(6, 'little')).decode('utf-8'))
+		flash(urlsafe_b64encode(getrandbits(48).to_bytes(6, 'little')).decode('utf-8'))
 		return redirect(url_for('viewpaste'))
 	return render_template('newpaste.html')
 
