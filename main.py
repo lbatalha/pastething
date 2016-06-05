@@ -8,18 +8,20 @@ from base64 import urlsafe_b64encode
 
 import pygments
 from pygments import highlight
-from pygments.lexers import get_lexer_by_name
+from pygments.lexers import get_lexer_by_name, guess_lexer, get_all_lexers
 from pygments.formatters import HtmlFormatter
 
-from flask import Flask
-from flask import render_template, url_for, flash
-from flask import request, redirect, Response, abort
+from flask import Flask, \
+				render_template, url_for, flash, \
+				request, redirect, Response, abort
 
 import config
 
 app = Flask(__name__)
 app.secret_key = config.secret_key
 app.config['MAX_CONTENT_LENGTH'] = config.max_content_length
+
+lexers_all = get_all_lexers()
 
 def base_encode(num):
 	if not num:
@@ -64,7 +66,7 @@ def newpaste():
 			return config.empty_paste
 
 		try:
-			if not config.ttl_min < int(paste_opt['ttl']) < config.ttl_max:
+			if not config.ttl_min <= int(paste_opt['ttl']) <= config.ttl_max:
 				return config.invalid_ttl
 		except ValueError:
 			return config.invalid_ttl
@@ -84,7 +86,7 @@ def newpaste():
 		print(url)
 		flash(urlsafe_b64encode(getrandbits(48).to_bytes(config.token_len, 'little')).decode('utf-8'))
 		return redirect(url_for('viewpaste'))
-	return render_template('newpaste.html')
+	return render_template('newpaste.html', lexers = lexers_all)
 
 @app.route('/paste', methods=['GET'])
 def viewpaste():
