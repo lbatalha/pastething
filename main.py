@@ -60,8 +60,14 @@ def newpaste():
 		for param in request.form:
 			if param in paste_opt:
 				paste_opt[param] = request.form[param]
-		if 'paste' not in paste_opt and paste_opt['paste']:
-			return "pls, actually paste something k?\n"
+		if paste_opt['paste'] == '':
+			return config.empty_paste
+
+		try:
+			if not config.ttl_min < int(paste_opt['ttl']) < config.ttl_max:
+				return config.invalid_ttl
+		except ValueError:
+			return config.invalid_ttl
 
 		print(paste_opt['ttl'])
 		print(paste_opt['paste'])
@@ -76,7 +82,7 @@ def newpaste():
 			#url_len += 1
 			##placeholder for collision check
 		print(url)
-		flash(urlsafe_b64encode(getrandbits(48).to_bytes(6, 'little')).decode('utf-8'))
+		flash(urlsafe_b64encode(getrandbits(48).to_bytes(config.token_len, 'little')).decode('utf-8'))
 		return redirect(url_for('viewpaste'))
 	return render_template('newpaste.html')
 
