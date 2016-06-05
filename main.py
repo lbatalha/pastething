@@ -19,9 +19,7 @@ import config
 
 app = Flask(__name__)
 app.secret_key = config.secret_key
-
-rng = random.SystemRandom()
-
+app.config['MAX_CONTENT_LENGTH'] = config.max_content_length
 
 def base_encode(num):
 	if not num:
@@ -74,7 +72,7 @@ def newpaste():
 			#url_len += 1
 			##placeholder for collision check
 		print(url)
-		flash(urlsafe_b64encode(rng.getrandbits(48).to_bytes(6, 'little')).decode('utf-8'))
+		flash(urlsafe_b64encode(random.getrandbits(48).to_bytes(6, 'little')).decode('utf-8'))
 		return redirect(url_for('viewpaste'))
 	return render_template('newpaste.html')
 
@@ -93,10 +91,6 @@ def viewpaste():
 		direction = 'ltr'
 		if request.args.get('d') is not None:
 			direction = 'rtl'
-
-		wrap = False
-		if request.args.get('w') is not None:
-			wrap = True
 
 		text = paste
 		try:

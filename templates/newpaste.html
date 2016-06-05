@@ -1,10 +1,12 @@
 {% extends 'layout.html' %}
 {% block title %}New Paste{% endblock %}
-{% block head %}{% endblock %}
+{% block head %}
+{{ super() }}
+{% endblock %}
 {% block wrapper %}
 	<form id='pasteform' method='post' enctype='multipart/form-data' action='/'>
 		<div id='content'>
-			<textarea id='pastebox' name='paste' form='pasteform' dirname='pastebox.dir' required></textarea>
+			<textarea id='pastebox' name='paste' form='pasteform' dirname='pastebox.dir' cols='30' rows='10' required></textarea>
 		</div>
 
 		<div id='controls'>
