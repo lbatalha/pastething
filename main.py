@@ -43,25 +43,29 @@ def paste_stats(text):
 	stats['lexer'] = 'python'
 	return stats
 
+def url_collision(route):
+	for rule in app.url_map.iter_rules():
+		print(rule.rule)
+		if rule.rule == '/' + route:
+			return True
+	return False
 
 @app.route('/', methods=['GET', 'POST'])
 def newpaste():
+	print(url_collision('paste'))
 	if request.method == 'POST':
-		if 'paste' in request.form and request.form['paste']:
-			paste = request.form['paste']
-		else:
+		paste_opt = {}
+		for param in config.defaults:
+				paste_opt[param] = config.defaults[param]
+		for param in request.form:
+			if param in paste_opt:
+				paste_opt[param] = request.form[param]
+		if 'paste' not in paste_opt and paste_opt['paste']:
 			return "pls, actually paste something k?\n"
-		if 'lexer' in request.form and request.form['lexer']:
-			lexer = request.form['lexer']
-		else:
-			lexer = config.lexer
-		if 'ttl' in request.form and request.form['ttl']:
-			ttl = int(request.form['ttl'])
-		else:
-			ttl = config.ttl
-		print(ttl)
-		print(lexer)
-		print(paste)
+
+		print(paste_opt['ttl'])
+		print(paste_opt['paste'])
+		print(paste_opt['lexer'])
 
 		collision = True
 		while collision:

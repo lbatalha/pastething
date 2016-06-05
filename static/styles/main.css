@@ -10,10 +10,11 @@
 body {
 	background-color: #171812;
 	margin: auto;
+	font-size: 12pt;
 }
 
 #maindiv {
-	max-width: 90ch;
+	max-width: 100ch;
 	min-width: 80ch;
 	margin: auto;
 }
@@ -46,6 +47,10 @@ a:hover{ color: #e6db74}
 	padding: 0.5em;
 
 }
+#logo a { text-decoration: none; }
+#logo a:link { color: #e6db74}
+#logo a:visited{ color: #e6db74}
+#logo a:hover{ color: #f8f8f2}
 
 #nav {
 	font-family: monospace;
