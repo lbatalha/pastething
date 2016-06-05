@@ -10,14 +10,12 @@
 body {
 	background-color: #171812;
 	margin: auto;
-
 }
 
 #maindiv {
 	max-width: 90ch;
 	min-width: 80ch;
 	margin: auto;
-
 }
 a { text-decoration: none; }
 a:link{ color: #f8f8f2}
@@ -28,7 +26,6 @@ a:hover{ color: #e6db74}
 #wrapper {
 	width: auto;
 	font-family: monospace;
-
 }
 
 #header {
@@ -77,8 +74,8 @@ a:hover{ color: #e6db74}
 
 #content {
 	background-color: #272822;
-	padding: 0.25em;
-	overflow-x: scroll;
+	padding: 0em;
+	overflow-x: auto;
 	
 }
 
@@ -97,6 +94,17 @@ a:hover{ color: #e6db74}
 	padding: 0;
 	margin: 0;
 
+}
+
+#pastebox {
+	box-sizing: border-box;
+	resize: vertical;
+	width: 100%;
+	height: auto ;
+	margin: auto;
+	border: 0;
+	background-color: #272822;
+	color: #75715e;
 }
 
 .hll { background-color: #49483e }

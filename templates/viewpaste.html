@@ -2,35 +2,43 @@
 {% block head %}
 {{ super() }}
 <script>
-function wrap() {
-	var content = document.getElementById('content').style.whiteSpace;
-	if( document.getElementById('content').style.whiteSpace == 'pre'){
-		content = 'pre-wrap';
-	}else{
-		content = 'pre-wrap';
+	document.addEventListener("DOMContentLoaded", function(event) { 
+		"use strict";
+		document.getElementById("wrap").addEventListener("click", wrap);
+		document.getElementById("dir").addEventListener("click", dir);
+	});
+	function wrap(evt) {
+		var lines = document.getElementsByClassName("pastelines");
+		for(var i = 0, il = lines.length; i < il; i++){
+			if(window.getComputedStyle(lines[i]).getPropertyValue("white-space") == 'pre'){
+				lines[i].style.whiteSpace = "pre-wrap";
+			}else{
+				lines[i].style.whiteSpace = "pre";
+			}
+			
+		}
+		evt.preventDefault();
 	}
-}
-//document.getElementById('content').style.white-space: pre-wrap;
+	function dir(evt) {
+		var dir = document.getElementById("wrapper");
+		if(dir.getAttribute("dir") == 'ltr'){
+			dir.setAttribute("dir", "rtl");
+		}else{
+			dir.setAttribute("dir", "ltr");
+		}		
+		evt.preventDefault();
+	}
 </script>
 {% endblock %}
 {% block title %}Paste{% endblock %}
 {% block wrapper %}
 <div id='info'>
-	
-
 	<div id='raw'><a href="?r">raw</a></div>
 	<div class='pipediv'>|</div>
-
-	<div id='wrap'><a href="{{ request.path }}" onclick="wrap();return false;">wrap</a></div>
-	
+	<div id='wrap'><a href="">wrap</a></div>
 	<div class='pipediv'>|</div>
-	{% if '?d' in request.path %}
-	<div id='dir'><a href="?d">[dir]</a></div>
-	{% else %}
 	<div id='dir'><a href="?d">dir</a></div>
-	{% endif %}
 	<div class='pipediv'>|</div>
-
 	<div id='lexer'> {{ stats['lexer'] }} </div>
 	<div class='pipediv'>|</div>
 	<div id='lines'> {{ stats['lines'] }} lines</div>
