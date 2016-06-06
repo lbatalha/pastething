@@ -3,26 +3,34 @@
 {% block head %}
 {{ super() }}
 {% endblock %}
-{% block wrapper %}
+{% block content %}
 	<form id='pasteform' method='post' enctype='multipart/form-data' action='/'>
 		<div id='content'>
-			<textarea id='pastebox' name='paste' form='pasteform' dirname='pastebox.dir' cols='30' rows='30' required></textarea>
+			<textarea id='pastebox' name='paste' form='pasteform' dirname='pastebox.dir' cols='30' rows='30' autocomplete='off' spellcheck='false' autofocus required></textarea>
 		</div>
 
 		<div id='controls'>
 			
-			<select name='lexer'>
-				<option value='txt' selected>Text Only</option>
-				<option value='py'>Python</option>
-				<option value='html'>HTML</option>
+			<select id='lexerselect' name='lexer' class='dropdown'>
+				<option value='auto' selected>Autodetect</option>
+				<option class='marker' disabled>Common Lexers</option>
+				{% for lexer in lexers_common %}
+					<option class='lexer-entry' value='{{ lexer[1] }}'>{{ lexer[0] }}</option>
+				{% endfor %}
+				<option class='marker' disabled>All Lexers</option>
+				{% for lexer in lexers_all %}
+					<option class='lexer-entry' value='{{ lexer[1][0] }}'>{{ lexer[0] }}</option>
+				{% endfor %}
 			</select>
-			<select name='ttl'>
-				<option value='60'>1 min</option>
-				<option value='600'>10 min</option>
+			<select id='ttlselect' name='ttl' class='dropdown'>
+				<option value='1' selected>1 hour</option>
+				{% for entry in ttl%}
+					<option value='{{ entry[1] }}'>{{ entry[0] }}</option>
+				{% endfor %}
 			</select>
-			<input type='number' name='burn'>
+			<input id='burninput' type='number' name='burn' min='{{ ttl_min }}' max='{{ ttl_max }}' placeholder='Burn' >
 
-			<input type='submit' value='Paste'>
+			<input id='pastebutton' type='submit' value='Paste'>
 			
 		</div>
 	</form>

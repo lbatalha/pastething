@@ -5,6 +5,7 @@ from random import getrandbits
 from base64 import urlsafe_b64encode
 
 #-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+import psycopg2
 
 import pygments
 from pygments import highlight
@@ -12,8 +13,8 @@ from pygments.lexers import get_lexer_by_name, guess_lexer, get_all_lexers
 from pygments.formatters import HtmlFormatter
 
 from flask import Flask, \
-				render_template, url_for, flash, \
-				request, redirect, Response, abort
+		render_template, url_for, flash, \
+		request, redirect, Response, abort
 
 import config
 
@@ -45,16 +46,22 @@ def paste_stats(text):
 	stats['lexer'] = 'python'
 	return stats
 
-def url_collision(route):
+def url_collision(db, route):
 	for rule in app.url_map.iter_rules():
 		print(rule.rule)
 		if rule.rule == '/' + route:
 			return True
+	cur = db.cursor()
+	cur.execute("""SELECT TOP 1 pasteid FROM pastes WHERE pasteid = %s;""", (route))
+	if cur.fetchone():
+		return True
 	return False
+
+def db_newpaste(db, data):
+	return
 
 @app.route('/', methods=['GET', 'POST'])
 def newpaste():
-	print(url_collision('paste'))
 	if request.method == 'POST':
 		paste_opt = {}
 		for param in config.defaults:
@@ -71,22 +78,24 @@ def newpaste():
 		except ValueError:
 			return config.invalid_ttl
 
-		print(paste_opt['ttl'])
-		print(paste_opt['paste'])
-		print(paste_opt['lexer'])
-
-		collision = True
-		while collision:
-			url = ''
-			for i in range(config.url_len):
-				url += base_encode(getrandbits(6))
-			collision = None
-			#url_len += 1
-			##placeholder for collision check
-		print(url)
+		try:
+			if paste_opt['lexer'] == 'auto':
+				lexer = guess_lexer(paste_opt['paste'])
+		except pygments.util.ClassNotFound:
+			paste_opt['lexer'] = 'txt'
+		print(paste_opt)
+		
+		db = psycopg2.connect("host=localhost dbname='pastebin' user='pastebin' password='1234'")
+		url_len = config.url_len
+		pasteid = ''
+		while url_collision(db, pasteid):
+			for i in range(url_len):
+				pasteid += base_encode(getrandbits(6))
+			url_len += 1
+		print(pasteid)
 		flash(urlsafe_b64encode(getrandbits(48).to_bytes(config.token_len, 'little')).decode('utf-8'))
 		return redirect(url_for('viewpaste'))
-	return render_template('newpaste.html', lexers = lexers_all)
+	return render_template('newpaste.html', lexers_all = lexers_all, lexers_common = config.lexers_common, ttl = config.ttl_options, ttl_max = config.ttl_max, ttl_min = config.ttl_min)
 
 @app.route('/paste', methods=['GET'])
 def viewpaste():
@@ -113,6 +122,18 @@ def viewpaste():
 			paste = text
 
 		return render_template('viewpaste.html', stats=stats, paste=paste.split("\n"), direction=direction)
+
+@app.route('/about/api')
+def aboutapi():
+	return render_template('api.html')
+
+@app.route('/about')
+def aboutpage():
+	return render_template('about.html')
+
+@app.route('/stats')
+def statspage():
+	return render_template('stats.html')
 
 if __name__ == '__main__':
 	app.debug = True
