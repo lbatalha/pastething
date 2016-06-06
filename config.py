@@ -9,12 +9,16 @@ defaults = {
 #paste options
 ttl_max = 730 #maximum allowed paste ttl in hours
 ttl_min = 0 #minimum allowed paste ttl in hours
-
+burn_max = 1000 #maximum allowed reads before burning paste [default: 1000]
+burn_min = 0 #minimum allowed reads before burning paste [default: 0]
 token_len = 6 #delete token length in bytes/characters
 
 #flask configuration
 secret_key = 'some_secret'
 max_content_length = 10 * 1024 * 1024 #max form upload size in bits
+
+#postgresql configuration
+dsn = "host=localhost port=6432 dbname='pastebin' user='pastebin' password='1234'"
 
 #paste url
 url_len = 1 #minimum paste url length in characters
@@ -24,7 +28,7 @@ base = len(url_alph)
 #error messages
 empty_paste = "pls, actually paste something k?\n"
 invalid_ttl = "ttl must be between " + str(ttl_min) + " and " + str(ttl_max) +" hours\n"
-
+invalid_burn = "burn count must be between " + str(burn_min) + " and " + str(burn_max) + "\n" 
 
 #form options
 ttl_options = [

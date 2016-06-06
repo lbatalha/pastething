@@ -3,7 +3,7 @@
 
 from random import getrandbits
 from base64 import urlsafe_b64encode
-
+from datetime import datetime, timedelta
 #-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 import psycopg2
 
@@ -52,13 +52,22 @@ def url_collision(db, route):
 		if rule.rule == '/' + route:
 			return True
 	cur = db.cursor()
-	cur.execute("""SELECT TOP 1 pasteid FROM pastes WHERE pasteid = %s;""", (route))
+	cur.execute("""SELECT DISTINCT pasteid FROM pastes WHERE pasteid = %s;""", (route))
 	if cur.fetchone():
 		return True
 	return False
 
-def db_newpaste(db, data):
-	return
+def db_newpaste(db, opt):
+	date = datetime.utcnow()
+	date += timedelta(hours=int(opt['ttl']))
+	cur = db.cursor()
+	#try:
+	cur.execute("""INSERT INTO pastes (pasteid, token, lexer, expiration, burn, paste) VALUES (%s, %s, %s, %s, %s, %s);""", (opt['pasteid'], opt['token'], opt['lexer'], date, opt['burn'], opt['paste'])) 
+	db.commit()
+	return True
+	#except:
+	#cur.rollback()
+	#return False
 
 @app.route('/', methods=['GET', 'POST'])
 def newpaste():
@@ -80,22 +89,37 @@ def newpaste():
 
 		try:
 			if paste_opt['lexer'] == 'auto':
-				lexer = guess_lexer(paste_opt['paste'])
+				paste_opt['lexer'] = guess_lexer(paste_opt['paste']).name
 		except pygments.util.ClassNotFound:
 			paste_opt['lexer'] = 'txt'
-		print(paste_opt)
 		
-		db = psycopg2.connect("host=localhost dbname='pastebin' user='pastebin' password='1234'")
+		try:
+			if paste_opt['burn'] == '':
+				paste_opt['burn'] = config.defaults['burn']
+			elif not config.burn_min <= int(paste_opt['burn']) <= config.burn_max:
+				return config.invalid_burn
+		except ValueError:
+			return config.invalid_burn
+
+		db = psycopg2.connect(config.dsn)
+
 		url_len = config.url_len
-		pasteid = ''
-		while url_collision(db, pasteid):
+		paste_opt['pasteid'] = ''
+		while url_collision(db, paste_opt['pasteid']):
 			for i in range(url_len):
-				pasteid += base_encode(getrandbits(6))
+				paste_opt['pasteid'] += base_encode(getrandbits(6))
 			url_len += 1
-		print(pasteid)
-		flash(urlsafe_b64encode(getrandbits(48).to_bytes(config.token_len, 'little')).decode('utf-8'))
-		return redirect(url_for('viewpaste'))
-	return render_template('newpaste.html', lexers_all = lexers_all, lexers_common = config.lexers_common, ttl = config.ttl_options, ttl_max = config.ttl_max, ttl_min = config.ttl_min)
+		
+		paste_opt['token'] = urlsafe_b64encode(getrandbits(48).to_bytes(config.token_len, 'little')).decode('utf-8')
+				
+		if db_newpaste(db, paste_opt):
+			db.close()
+			return redirect(url_for('viewpaste'))
+		else:
+			db.close()
+			return 500
+	else:
+		return render_template('newpaste.html', lexers_all = lexers_all, lexers_common = config.lexers_common, ttl = config.ttl_options, ttl_max = config.ttl_max, ttl_min = config.ttl_min)
 
 @app.route('/paste', methods=['GET'])
 def viewpaste():
