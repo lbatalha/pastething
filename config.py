@@ -7,7 +7,7 @@ defaults = {
 }
 
 #paste options
-ttl_max = 730 #maximum allowed paste ttl in hours
+ttl_max = 731 #maximum allowed paste ttl in hours, extra decimals 
 ttl_min = 0 #minimum allowed paste ttl in hours
 burn_max = 1000 #maximum allowed reads before burning paste [default: 1000]
 burn_min = 0 #minimum allowed reads before burning paste [default: 0]
