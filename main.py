@@ -6,6 +6,7 @@ from base64 import urlsafe_b64encode
 from datetime import datetime, timedelta
 #-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 import psycopg2
+import psycopg2.extras
 
 import pygments
 from pygments import highlight
@@ -22,6 +23,7 @@ app = Flask(__name__)
 app.secret_key = config.secret_key
 app.config['MAX_CONTENT_LENGTH'] = config.max_content_length
 
+cursor_factory = psycopg2.extras.DictCursor
 lexers_all = get_all_lexers()
 
 def base_encode(num):
@@ -51,24 +53,25 @@ def url_collision(db, route):
 		print(rule.rule)
 		if rule.rule == '/' + route:
 			return True
-	cur = db.cursor()
-	cur.execute("""SELECT DISTINCT pasteid FROM pastes WHERE pasteid = %s;""", (route))
-	if cur.fetchone():
-		return True
+	with db.cursor() as cur:
+		cur.execute("""SELECT pasteid FROM pastes WHERE pasteid = %s;""", (route,))
+		if cur.fetchone():
+			return True
 	return False
 
 def db_newpaste(db, opt):
 	date = datetime.utcnow()
-	date += timedelta(hours=int(opt['ttl']))
-	cur = db.cursor()
-	#try:
-	cur.execute("""INSERT INTO pastes (pasteid, token, lexer, expiration, burn, paste) VALUES (%s, %s, %s, %s, %s, %s);""", (opt['pasteid'], opt['token'], opt['lexer'], date, opt['burn'], opt['paste'])) 
-	db.commit()
+	date += timedelta(hours=float(opt['ttl']))
+	with db.cursor() as cur:
+		cur.execute("""INSERT INTO pastes (pasteid, token, lexer, expiration, burn, paste) VALUES (%s, %s, %s, %s, %s, %s);""", (opt['pasteid'], opt['token'], opt['lexer'], date, opt['burn'], opt['paste'])) 
 	return True
-	#except:
-	#cur.rollback()
-	#return False
 
+def db_getpaste(db, pasteid):
+	with db.cursor(cursor_factory=cursor_factory) as cur:
+		cur.execute(("""SELECT * FROM pastes WHERE pasteid=%s;"""), (pasteid,))
+		r = cur.fetchone()
+	return r
+	
 @app.route('/', methods=['GET', 'POST'])
 def newpaste():
 	if request.method == 'POST':
@@ -82,14 +85,14 @@ def newpaste():
 			return config.empty_paste
 
 		try:
-			if not config.ttl_min <= int(paste_opt['ttl']) <= config.ttl_max:
+			if not config.ttl_min < float(paste_opt['ttl']) < config.ttl_max:
 				return config.invalid_ttl
 		except ValueError:
 			return config.invalid_ttl
 
 		try:
 			if paste_opt['lexer'] == 'auto':
-				paste_opt['lexer'] = guess_lexer(paste_opt['paste']).name
+				paste_opt['lexer'] = guess_lexer(paste_opt['paste']).aliases[0]
 		except pygments.util.ClassNotFound:
 			paste_opt['lexer'] = 'txt'
 		
@@ -114,39 +117,35 @@ def newpaste():
 				
 		if db_newpaste(db, paste_opt):
 			db.close()
-			return redirect(url_for('viewpaste'))
+			return redirect(paste_opt['pasteid'])
 		else:
 			db.close()
 			return 500
 	else:
 		return render_template('newpaste.html', lexers_all = lexers_all, lexers_common = config.lexers_common, ttl = config.ttl_options, ttl_max = config.ttl_max, ttl_min = config.ttl_min)
 
-@app.route('/paste', methods=['GET'])
-def viewpaste():
+@app.route('/<pasteid>', methods=['GET'])
+def viewpaste(pasteid):
 	if request.method == 'GET':
-		with open('main.py', 'r') as fp:
-			paste = fp.read()
-			fp.close()
-
-		stats = paste_stats(paste)
-
 		if request.args.get('r') is not None:
 				return plain(paste)
 
 		direction = 'ltr'
 		if request.args.get('d') is not None:
 			direction = 'rtl'
+		
+		with psycopg2.connect(config.dsn) as db:
+			result = db_getpaste(db,pasteid)
+			print(result)
+			return
+			#TODO: store stats in DB
+			stats = paste_stats(result['paste'])
 
-		text = paste
-		try:
-			lexer = get_lexer_by_name('python')
+			lexer = get_lexer_by_name(result['lexer'])
 			formatter = HtmlFormatter(nowrap=True, cssclass='paste')
-			paste = highlight(paste, lexer, formatter)
-		except pygments.util.ClassNotFound:
-			paste = text
-
-		return render_template('viewpaste.html', stats=stats, paste=paste.split("\n"), direction=direction)
-
+			paste = highlight(result['paste'], lexer, formatter)
+			return render_template('viewpaste.html', stats=stats, paste=paste.split("\n"), direction=direction)
+		return 500
 @app.route('/about/api')
 def aboutapi():
 	return render_template('api.html')
