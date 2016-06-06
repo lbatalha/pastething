@@ -16,19 +16,20 @@
 					{% block header %}{% endblock %}
 					<div id='nav'>
 						<a href="/about">Info</a>
-						<a href="/api">API</a>
+						<a href="/about/api">API</a>
 						<a href="/stats">Stats</a>
 					</div>
 				</div>
 
 
-				{% block wrapper %}{% endblock %}
-			</div>
+				{% block content %}{% endblock %}
+			
 
-			<div id="footer">
-				{% block footer %}
-				&copy; Copyright 2016 pastething
-				{% endblock %}
+    			<div id="footer">
+    				{% block footer %}
+    				&copy; Copyright 2016 pastething
+    				{% endblock %}
+                </div>
 			</div>
 		</div>
 	</body>

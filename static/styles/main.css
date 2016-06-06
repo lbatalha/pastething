@@ -85,13 +85,14 @@ a:hover{ color: #e6db74}
 	color: #888481;
 	line-height: 1.25em;
 	padding: 0;
-	margin: 0;
+	margin: 0 0.5em 0 0.5em;
 	height: auto;
 
 }
 
 .pastelines {
 	white-space: pre;
+	tab-size: 4;
 	padding: 0;
 	margin: 0;
 
@@ -109,13 +110,60 @@ a:hover{ color: #e6db74}
 	border: 0;
 	background-color: #272822;
 	color: #75715e;
+	outline-color: #55515e;
+}
+
+#controls {
+	color: #888481;
+	border: 3px solid;
+	border-color: #272822;
+	padding: 0.5em;
+	outline-color: #888481;
+
+}
+#lexerselect {
+	color: inherit;
+	background-color: #272822;
+	border-color: #272822;
+	outline-color: inherit;
+}
+#ttlselect {
+	color: inherit;
+	background-color: #272822;
+	border-color: #272822;
+	outline-color: inherit;
+}
+
+#burninput {
+	width: 6ch;
+	border: 0;
+	color: inherit;
+	background-color: #272822;
+	border-color: #272822;
+	text-align: right;
+	outline-color: inherit;
+
+}
+
+#pastebutton {
+	color: inherit;
+	background-color: #272822;
+	border: 0;
+	width: 8em;
+	height: 1.5em;
+	outline-color: #f8f8f2;
+}
+
+.marker {
+	color: #49483e;
+	background-color: #e6db74;
 }
 
 /*--- pygments stylesheet ----*/
 
 .hll { background-color: #49483e }
 .c { color: #75715e } /* Comment */
-.err { color: #960050; background-color: #1e0010 } /* Error */
+.err { color: #960050; background-color: #f92672 } /* Error */
 .k { color: #66d9ef } /* Keyword */
 .l { color: #ae81ff } /* Literal */
 .n { color: #f8f8f2 } /* Name */
