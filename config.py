@@ -28,10 +28,14 @@ url_len = 1 #minimum paste url length in characters
 url_alph = tuple("123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghkmnpqrstuvwxyz") #alphabet used to generate paste url
 base = len(url_alph)
 
-#error messages
+#return messages
 empty_paste = "pls, actually paste something k?\n"
-invalid_ttl = "ttl must be between " + str(paste_limits['ttl_min']) + " and " + str(paste_limits['ttl_max']) +" hours\n"
-invalid_burn = "burn count must be between " + str(paste_limits['burn_min']) + " and " + str(paste_limits['burn_max']) + "\n" 
+invalid_ttl = "ttl must be between " + str(paste_limits['ttl_min']) + " and " + str(paste_limits['ttl_max']) +" hours.\n"
+invalid_burn = "burn count must be between " + str(paste_limits['burn_min']) + " and " + str(paste_limits['burn_max']) + ".\n" 
+msg_err_404 = "404 - Not Found.\n"
+msg_err_401 = "401 - Unauthorized - check your delete token.\n"
+msg_paste_deleted = "paste deleted successfully.\n"
+
 
 #form options
 ttl_options = [
