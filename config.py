@@ -12,8 +12,10 @@ paste_limits = {
 	'ttl_min': 0, #minimum allowed paste ttl in hours
 	'burn_max': 1000, #maximum allowed reads before burning paste [default: 1000]
 	'burn_min': 1, #minimum allowed reads before burning paste [default: 1]
-	'token_len': 6, #delete token length in bytes/characters
 }
+
+token_len =  6 #delete token length in bytes/characters
+
 #flask configuration
 secret_key = 'some_secret'
 max_content_length = 2 * 1024 * 1024 #max form upload size in bits
