@@ -91,7 +91,7 @@ def db_burn(db, pasteid):
 @app.route('/paste', methods=['POST'])
 @app.route('/raw', methods=['POST'])
 @app.route('/new', methods=['POST'])
-@app.route('/newpaste', methods=['POST'])
+@app.route('/newpaste', methods=['POST']) #only used via html form
 def newpaste():
 	if request.method == 'POST':
 		paste_opt = {}
