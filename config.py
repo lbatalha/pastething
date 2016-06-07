@@ -7,12 +7,13 @@ defaults = {
 }
 
 #paste options
-ttl_max = 731 #maximum allowed paste ttl in hours, extra decimals 
-ttl_min = 0 #minimum allowed paste ttl in hours
-burn_max = 1000 #maximum allowed reads before burning paste [default: 1000]
-burn_min = 1 #minimum allowed reads before burning paste [default: 1]
-token_len = 6 #delete token length in bytes/characters
-
+paste_limits = {
+	'ttl_max': 731, #maximum allowed paste ttl in hours, extra decimals 
+	'ttl_min': 0, #minimum allowed paste ttl in hours
+	'burn_max': 1000, #maximum allowed reads before burning paste [default: 1000]
+	'burn_min': 1, #minimum allowed reads before burning paste [default: 1]
+	'token_len': 6, #delete token length in bytes/characters
+}
 #flask configuration
 secret_key = 'some_secret'
 max_content_length = 2 * 1024 * 1024 #max form upload size in bits
@@ -27,8 +28,8 @@ base = len(url_alph)
 
 #error messages
 empty_paste = "pls, actually paste something k?\n"
-invalid_ttl = "ttl must be between " + str(ttl_min) + " and " + str(ttl_max) +" hours\n"
-invalid_burn = "burn count must be between " + str(burn_min) + " and " + str(burn_max) + "\n" 
+invalid_ttl = "ttl must be between " + str(paste_limits['ttl_min']) + " and " + str(paste_limits['ttl_max']) +" hours\n"
+invalid_burn = "burn count must be between " + str(paste_limits['burn_min']) + " and " + str(paste_limits['burn_max']) + "\n" 
 
 #form options
 ttl_options = [

@@ -3,7 +3,7 @@
 
 from random import getrandbits
 from base64 import urlsafe_b64encode
-from datetime import datetime, timedelta
+from datetime import date, datetime, timedelta
 #-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 import psycopg2
 import psycopg2.extras
@@ -24,7 +24,9 @@ app.secret_key = config.secret_key
 app.config['MAX_CONTENT_LENGTH'] = config.max_content_length
 
 cursor_factory = psycopg2.extras.DictCursor
+
 lexers_all = get_all_lexers()
+year = date.today().year
 
 def base_encode(num):
 	if not num:
@@ -129,7 +131,7 @@ def newpaste():
 
 		return redirect(paste_opt['pasteid'])
 	else:
-		return render_template('newpaste.html', lexers_all = lexers_all, lexers_common = config.lexers_common, ttl = config.ttl_options, ttl_max = config.ttl_max, ttl_min = config.ttl_min)
+		return render_template('newpaste.html', lexers_all = lexers_all, lexers_common = config.lexers_common, ttl = config.ttl_options, paste_limits = config.paste_limits, year = year)
 
 @app.route('/<pasteid>', methods=['GET'])
 def viewpaste(pasteid):
@@ -141,10 +143,10 @@ def viewpaste(pasteid):
 			result = db_getpaste(db, pasteid)
 			
 			if not result:
-				return "404"
+				abort(404)
 			if result['burn'] == 0 or result['expiration'] < datetime.utcnow():
 				db_deletepaste(db, pasteid)
-				return "404"
+				abort(404)
 			elif result['burn'] > 0:
 				db_burn(db, pasteid)
 			
@@ -159,8 +161,8 @@ def viewpaste(pasteid):
 			}
 			if request.args.get('r') is not None:
 				return plain(result['paste'])
-			return render_template('viewpaste.html', stats=stats, paste=paste.split("\n"), direction=direction)
-		return "500"
+			return render_template('viewpaste.html', stats=stats, paste=paste.split("\n"), direction=direction, year=year)
+		abort(500)
 @app.route('/about/api')
 def aboutapi():
 	return render_template('api.html')
@@ -172,6 +174,16 @@ def aboutpage():
 @app.route('/stats')
 def statspage():
 	return render_template('stats.html')
+
+@app.errorhandler(404)
+def page_not_found(e):
+	return render_template('404.html'), 404
+
+
+#@app.errorhandler(500)
+@app.route('/500.html')
+def internal_server_error():
+	return render_template('500.html'), 500
 
 if __name__ == '__main__':
 	app.debug = True
