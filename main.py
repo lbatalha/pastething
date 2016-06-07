@@ -45,7 +45,6 @@ def paste_stats(text):
 	stats['lines'] = len(text.split('\n'))
 	stats['sloc'] = stats['lines'] - len(text.split('\n\n'))
 	stats['size'] = len(text.encode('utf-8'))
-	stats['lexer'] = 'python'
 	return stats
 
 def url_collision(db, route):
@@ -53,49 +52,61 @@ def url_collision(db, route):
 		print(rule.rule)
 		if rule.rule == '/' + route:
 			return True
-	with db.cursor() as cur:
-		cur.execute("""SELECT pasteid FROM pastes WHERE pasteid = %s;""", (route,))
+	with db.cursor() as cur: 
+		cur.execute("SELECT pasteid FROM pastes WHERE pasteid = %s;", (route,))
 		if cur.fetchone():
 			return True
 	return False
 
-def db_newpaste(db, opt):
+def db_newpaste(db, opt, stats):
 	date = datetime.utcnow()
 	date += timedelta(hours=float(opt['ttl']))
 	with db.cursor() as cur:
-		cur.execute("""INSERT INTO pastes (pasteid, token, lexer, expiration, burn, paste) VALUES (%s, %s, %s, %s, %s, %s);""", (opt['pasteid'], opt['token'], opt['lexer'], date, opt['burn'], opt['paste'])) 
-	return True
+		cur.execute("""INSERT INTO 
+			pastes (pasteid, token, lexer, expiration, burn, 
+			paste, size, lines, sloc)
+			VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s);""", \
+			(opt['pasteid'], opt['token'], opt['lexer'], \
+			date, opt['burn'], opt['paste'], \
+			stats['size'], stats['lines'], stats['sloc']))
 
 def db_getpaste(db, pasteid):
 	with db.cursor(cursor_factory=cursor_factory) as cur:
 		cur.execute(("""SELECT * FROM pastes WHERE pasteid=%s;"""), (pasteid,))
 		r = cur.fetchone()
+		print(r)
 	return r
-	
+
+
+def db_deletepaste(db, pasteid):
+	with db.cursor() as cur:
+		cur.execute(("""DELETE FROM pastes WHERE pasteid=%s;"""), (pasteid,))
+
+def db_burn(db, pasteid):
+	with db.cursor() as cur:
+		cur.execute(("""UPDATE pastes SET burn = burn - 1 WHERE pasteid=%s;"""), (pasteid,))
+
 @app.route('/', methods=['GET', 'POST'])
 def newpaste():
 	if request.method == 'POST':
 		paste_opt = {}
-		for param in config.defaults:
+		for param in config.defaults: #initizlize form with defaults
 				paste_opt[param] = config.defaults[param]
 		for param in request.form:
 			if param in paste_opt:
 				paste_opt[param] = request.form[param]
 		if paste_opt['paste'] == '':
 			return config.empty_paste
-
 		try:
 			if not config.ttl_min < float(paste_opt['ttl']) < config.ttl_max:
 				return config.invalid_ttl
 		except ValueError:
 			return config.invalid_ttl
-
 		try:
 			if paste_opt['lexer'] == 'auto':
 				paste_opt['lexer'] = guess_lexer(paste_opt['paste']).aliases[0]
 		except pygments.util.ClassNotFound:
-			paste_opt['lexer'] = 'txt'
-		
+			paste_opt['lexer'] = 'text'
 		try:
 			if paste_opt['burn'] == '':
 				paste_opt['burn'] = config.defaults['burn']
@@ -104,48 +115,52 @@ def newpaste():
 		except ValueError:
 			return config.invalid_burn
 
-		db = psycopg2.connect(config.dsn)
+		with psycopg2.connect(config.dsn) as db:
+			url_len = config.url_len
+			paste_opt['pasteid'] = ''
+			while url_collision(db, paste_opt['pasteid']):
+				for i in range(url_len):
+					paste_opt['pasteid'] += base_encode(getrandbits(6))
+				url_len += 1
+			
+			paste_opt['token'] = urlsafe_b64encode(getrandbits(48).to_bytes(config.token_len, 'little')).decode('utf-8')
+			stats = paste_stats(paste_opt['paste'])
+			db_newpaste(db, paste_opt, stats)
 
-		url_len = config.url_len
-		paste_opt['pasteid'] = ''
-		while url_collision(db, paste_opt['pasteid']):
-			for i in range(url_len):
-				paste_opt['pasteid'] += base_encode(getrandbits(6))
-			url_len += 1
-		
-		paste_opt['token'] = urlsafe_b64encode(getrandbits(48).to_bytes(config.token_len, 'little')).decode('utf-8')
-				
-		if db_newpaste(db, paste_opt):
-			db.close()
-			return redirect(paste_opt['pasteid'])
-		else:
-			db.close()
-			return 500
+		return redirect(paste_opt['pasteid'])
 	else:
 		return render_template('newpaste.html', lexers_all = lexers_all, lexers_common = config.lexers_common, ttl = config.ttl_options, ttl_max = config.ttl_max, ttl_min = config.ttl_min)
 
 @app.route('/<pasteid>', methods=['GET'])
 def viewpaste(pasteid):
 	if request.method == 'GET':
-		if request.args.get('r') is not None:
-				return plain(paste)
-
 		direction = 'ltr'
 		if request.args.get('d') is not None:
 			direction = 'rtl'
-		
 		with psycopg2.connect(config.dsn) as db:
-			result = db_getpaste(db,pasteid)
-			print(result)
-			return
-			#TODO: store stats in DB
-			stats = paste_stats(result['paste'])
-
+			result = db_getpaste(db, pasteid)
+			
+			if not result:
+				return "404"
+			if result['burn'] == 0 or result['expiration'] < datetime.utcnow():
+				db_deletepaste(db, pasteid)
+				return "404"
+			elif result['burn'] > 0:
+				db_burn(db, pasteid)
+			
 			lexer = get_lexer_by_name(result['lexer'])
+			
 			formatter = HtmlFormatter(nowrap=True, cssclass='paste')
 			paste = highlight(result['paste'], lexer, formatter)
+			stats = {'lines': result['lines'],
+					'sloc': result['sloc'],
+					'size': result['size'],
+					'lexer': lexer.name
+			}
+			if request.args.get('r') is not None:
+				return plain(result['paste'])
 			return render_template('viewpaste.html', stats=stats, paste=paste.split("\n"), direction=direction)
-		return 500
+		return "500"
 @app.route('/about/api')
 def aboutapi():
 	return render_template('api.html')
