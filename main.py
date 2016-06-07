@@ -87,10 +87,6 @@ def db_burn(db, pasteid):
 		cur.execute(("""UPDATE pastes SET burn = burn - 1 WHERE pasteid=%s;"""), (pasteid,))
 
 @app.route('/', methods=['GET', 'POST'])
-@app.route('/post', methods=['POST'])
-@app.route('/paste', methods=['POST'])
-@app.route('/raw', methods=['POST'])
-@app.route('/new', methods=['POST'])
 @app.route('/newpaste', methods=['POST']) #only used via html form
 def newpaste():
 	if request.method == 'POST':
@@ -128,19 +124,25 @@ def newpaste():
 					paste_opt['pasteid'] += base_encode(getrandbits(6))
 				url_len += 1
 			
-			paste_opt['token'] = urlsafe_b64encode(getrandbits(48).to_bytes(config.token_len, 'little')).decode('utf-8')
+			paste_opt['token'] = \
+				urlsafe_b64encode(getrandbits(48).to_bytes(config.token_len, 'little')).decode('utf-8')
+			
 			stats = paste_stats(paste_opt['paste'])
+			
 			db_newpaste(db, paste_opt, stats)
 			
-			if request.path != '/newpaste':
-				return paste_opt['token'] + " " + url_for('viewraw', pasteid = paste_opt['pasteid'])
+			if request.path != '/newpaste': #plaintext reply
+				return paste_opt['token'] + " - " + url_for('viewraw', pasteid = paste_opt['pasteid'])
 			
 			flash(paste_opt['token'])
 		return redirect(paste_opt['pasteid'])
 	elif request.method == 'GET':
-		return render_template('newpaste.html', lexers_all = lexers_all, lexers_common = config.lexers_common, ttl = config.ttl_options, paste_limits = config.paste_limits, year = year)
+		return render_template('newpaste.html', \
+				lexers_all = lexers_all, lexers_common = config.lexers_common, \
+				ttl = config.ttl_options, paste_limits = config.paste_limits, year = year)
 	else:
 		abort(405)
+
 @app.route('/plain/<pasteid>', methods=['GET', 'DELETE'])
 @app.route('/raw/<pasteid>', methods=['GET', 'DELETE'])
 def viewraw(pasteid):
@@ -155,19 +157,21 @@ def viewraw(pasteid):
 			elif result['burn'] > 0:
 				db_burn(db, pasteid)
 			return plain(result['paste'])
+	
 	if request.method == 'DELETE':
 		with psycopg2.connect(config.dsn) as db:
 			result = db_getpaste(db, pasteid)
 			if not result:
-				abort(404)
+				return config.msg_err_404
 			elif result['token'] in request.form:
 				db_deletepaste(db, pasteid)
 			elif 'token' in request.headers and result['token'] == request.headers.get('token'):
 				db_deletepaste(db, pasteid)
 			else:
-				abort(401)
+				return config.msg_err_401
 	abort(405)	
-@app.route('/<pasteid>', methods=['GET'])
+
+@app.route('/<pasteid>', methods=['GET', 'DELETE'])
 def viewpaste(pasteid):
 	if request.method == 'GET':
 		if request.args.get('r') is not None:
@@ -194,9 +198,40 @@ def viewpaste(pasteid):
 					'size': result['size'],
 					'lexer': lexer.name
 			}
-			return render_template('viewpaste.html', stats=stats, paste=paste.split("\n"), direction=direction, year=year)
+			return render_template('viewpaste.html', \
+					stats=stats, paste=paste.split("\n"), direction=direction, year=year)
 		abort(500)
-	abort(405)
+	elif request.method == 'DELETE':
+		with psycopg2.connect(config.dsn) as db:
+			result = db_getpaste(db, pasteid)
+			if not result:
+				return config.err_404
+			elif result['token'] in request.form:
+				db_deletepaste(db, pasteid)
+				return config.msg_paste_deleted
+			elif 'token' in request.headers and result['token'] == request.headers.get('token'):
+				db_deletepaste(db, pasteid)
+				return config.paste_deleted
+			else:
+				return config.msg_err_401
+	else:
+		abort(405)
+
+@app.route('/<pasteid>/<token>', methods=['GET','DELETE'])
+def	deletepaste(pasteid, token):
+	with psycopg2.connect(config.dsn) as db:
+		result = db_getpaste(db, pasteid)
+		if not result:
+			return config.err_404
+		elif result['token'] == token:
+		    db_deletepaste(db, pasteid)
+		    return config.msg_paste_deleted
+		elif 'token' in request.headers and result['token'] == request.headers.get('token'):
+			db_deletepaste(db, pasteid)
+			return config.paste_deleted
+		else:
+			return config.msg_err_401
+			
 @app.route('/about/api')
 def aboutapi():
 	return render_template('api.html')
