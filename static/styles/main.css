@@ -1,7 +1,7 @@
 body {
 	background-color: #171812;
 	margin: auto;
-	font-size: 12pt;
+	font-size: 14px;
 }
 
 #maindiv {
@@ -51,6 +51,15 @@ a:hover{ color: #e6db74}
 	word-spacing: 2ch;
 	padding: 0.5em;
 }
+
+/*--- footer ----*/
+
+#footer {
+	padding-top: 1em;
+	color: #75715e;
+	text-align: center;
+}
+
 
 /*--- paste info box ----*/
 
@@ -157,6 +166,17 @@ a:hover{ color: #e6db74}
 .marker {
 	color: #49483e;
 	background-color: #e6db74;
+}
+
+
+/*--- error pages ----*/
+
+#errorpage h1{
+	color: #960050;
+}
+#errorpage {
+	color:  #f8f8f2;
+	text-align: center;
 }
 
 /*--- pygments stylesheet ----*/
