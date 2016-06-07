@@ -45,13 +45,12 @@ def plain(text):
 def paste_stats(text):
 	stats = {}
 	stats['lines'] = len(text.split('\n'))
-	stats['sloc'] = stats['lines'] - len(text.split('\n\n'))
+	stats['sloc'] = stats['lines'] - len(text.split('\n\n')) 
 	stats['size'] = len(text.encode('utf-8'))
 	return stats
 
 def url_collision(db, route):
 	for rule in app.url_map.iter_rules():
-		print(rule.rule)
 		if rule.rule == '/' + route:
 			return True
 	with db.cursor() as cur: 
@@ -76,7 +75,6 @@ def db_getpaste(db, pasteid):
 	with db.cursor(cursor_factory=cursor_factory) as cur:
 		cur.execute(("""SELECT * FROM pastes WHERE pasteid=%s;"""), (pasteid,))
 		r = cur.fetchone()
-		print(r)
 	return r
 
 
@@ -89,10 +87,15 @@ def db_burn(db, pasteid):
 		cur.execute(("""UPDATE pastes SET burn = burn - 1 WHERE pasteid=%s;"""), (pasteid,))
 
 @app.route('/', methods=['GET', 'POST'])
+@app.route('/post', methods=['POST'])
+@app.route('/paste', methods=['POST'])
+@app.route('/raw', methods=['POST'])
+@app.route('/new', methods=['POST'])
+@app.route('/newpaste', methods=['POST'])
 def newpaste():
 	if request.method == 'POST':
 		paste_opt = {}
-		for param in config.defaults: #initizlize form with defaults
+		for param in config.defaults: #init form with defaults
 				paste_opt[param] = config.defaults[param]
 		for param in request.form:
 			if param in paste_opt:
@@ -100,7 +103,7 @@ def newpaste():
 		if paste_opt['paste'] == '':
 			return config.empty_paste
 		try:
-			if not config.ttl_min < float(paste_opt['ttl']) < config.ttl_max:
+			if not config.paste_limits['ttl_min'] < float(paste_opt['ttl']) < config.paste_limits['ttl_max']:
 				return config.invalid_ttl
 		except ValueError:
 			return config.invalid_ttl
@@ -128,14 +131,47 @@ def newpaste():
 			paste_opt['token'] = urlsafe_b64encode(getrandbits(48).to_bytes(config.token_len, 'little')).decode('utf-8')
 			stats = paste_stats(paste_opt['paste'])
 			db_newpaste(db, paste_opt, stats)
-
+			
+			if request.path != '/newpaste':
+				return paste_opt['token'] + " " + url_for('viewraw', pasteid = paste_opt['pasteid'])
+			
+			flash(paste_opt['token'])
 		return redirect(paste_opt['pasteid'])
-	else:
+	elif request.method == 'GET':
 		return render_template('newpaste.html', lexers_all = lexers_all, lexers_common = config.lexers_common, ttl = config.ttl_options, paste_limits = config.paste_limits, year = year)
-
+	else:
+		abort(405)
+@app.route('/plain/<pasteid>', methods=['GET', 'DELETE'])
+@app.route('/raw/<pasteid>', methods=['GET', 'DELETE'])
+def viewraw(pasteid):
+	if request.method == 'GET':
+		with psycopg2.connect(config.dsn) as db:
+			result = db_getpaste(db, pasteid)
+			if not result:
+				abort(404)
+			if result['burn'] == 0 or result['expiration'] < datetime.utcnow():
+				db_deletepaste(db, pasteid)
+				abort(404)
+			elif result['burn'] > 0:
+				db_burn(db, pasteid)
+			return plain(result['paste'])
+	if request.method == 'DELETE':
+		with psycopg2.connect(config.dsn) as db:
+			result = db_getpaste(db, pasteid)
+			if not result:
+				abort(404)
+			elif result['token'] in request.form:
+				db_deletepaste(db, pasteid)
+			elif 'token' in request.headers and result['token'] == request.headers.get('token'):
+				db_deletepaste(db, pasteid)
+			else:
+				abort(401)
+	abort(405)	
 @app.route('/<pasteid>', methods=['GET'])
 def viewpaste(pasteid):
 	if request.method == 'GET':
+		if request.args.get('r') is not None:
+			return url_for(viewraw, pasteid)
 		direction = 'ltr'
 		if request.args.get('d') is not None:
 			direction = 'rtl'
@@ -151,7 +187,6 @@ def viewpaste(pasteid):
 				db_burn(db, pasteid)
 			
 			lexer = get_lexer_by_name(result['lexer'])
-			
 			formatter = HtmlFormatter(nowrap=True, cssclass='paste')
 			paste = highlight(result['paste'], lexer, formatter)
 			stats = {'lines': result['lines'],
@@ -159,10 +194,9 @@ def viewpaste(pasteid):
 					'size': result['size'],
 					'lexer': lexer.name
 			}
-			if request.args.get('r') is not None:
-				return plain(result['paste'])
 			return render_template('viewpaste.html', stats=stats, paste=paste.split("\n"), direction=direction, year=year)
 		abort(500)
+	abort(405)
 @app.route('/about/api')
 def aboutapi():
 	return render_template('api.html')
