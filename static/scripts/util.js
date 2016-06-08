@@ -1,6 +1,5 @@
 document.addEventListener("DOMContentLoaded", function(event) { 
 	"use strict";
-	document.getElementById("rm").addEventListener("click", token);
 	document.getElementById("wrap").addEventListener("click", wrap);
 	document.getElementById("dir").addEventListener("click", dir);
 	document.getElementById("indent").addEventListener("click", indent);
@@ -41,7 +40,3 @@ function indent(evt) {
 	evt.preventDefault();
 }
 
-function token(evt) {
-	var value = document.getElementById("token");
-	window.location.href = window.location.href + "/" + value;
-}
