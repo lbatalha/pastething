@@ -1,11 +1,11 @@
 body {
 	background-color: #171812;
 	margin: auto;
-	font-size: 14px;
+	font-size: 15px;
 }
 
 #maindiv {
-	max-width: 100ch;
+	max-width: 10ch;
 	min-width: 80ch;
 	margin: auto;
 }
@@ -101,6 +101,7 @@ a:hover{ color: #e6db74}
 
 .pastelines {
 	white-space: pre;
+	word-wrap: break-word;
 	tab-size: 4;
 	padding: 0;
 	margin: 0;
@@ -168,6 +169,14 @@ a:hover{ color: #e6db74}
 	background-color: #e6db74;
 }
 
+/*--- About pages ----*/
+#about {
+	padding: 2em 2ch 2em 2ch;
+	color: #f8f8f2;
+	background-color: #272822;
+	white-space: normal;
+}
+
 
 /*--- error pages ----*/
 
@@ -176,6 +185,13 @@ a:hover{ color: #e6db74}
 }
 #errorpage {
 	color:  #f8f8f2;
+	text-align: center;
+}
+
+/*--- paste deletion confirmation ----*/
+
+#deletepage {
+	color:  #a6e22e;
 	text-align: center;
 }
 

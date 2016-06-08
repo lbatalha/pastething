@@ -1,34 +1,7 @@
 {% extends 'layout.html' %}
 {% block head %}
 {{ super() }}
-<script>
-	document.addEventListener("DOMContentLoaded", function(event) { 
-		"use strict";
-		document.getElementById("wrap").addEventListener("click", wrap);
-		document.getElementById("dir").addEventListener("click", dir);
-	});
-	function wrap(evt) {
-		var lines = document.getElementsByClassName("pastelines");
-		for(var i = 0, il = lines.length; i < il; i++){
-			if(window.getComputedStyle(lines[i]).getPropertyValue("white-space") == 'pre'){
-				lines[i].style.whiteSpace = "pre-wrap";
-			}else{
-				lines[i].style.whiteSpace = "pre";
-			}
-			
-		}
-		evt.preventDefault();
-	}
-	function dir(evt) {
-		var dir = document.getElementById("wrapper");
-		if(dir.getAttribute("dir") == 'ltr'){
-			dir.setAttribute("dir", "rtl");
-		}else{
-			dir.setAttribute("dir", "ltr");
-		}		
-		evt.preventDefault();
-	}
-</script>
+<script src="{{ url_for('static', filename='scripts/util.js') }}"></script>
 {% endblock %}
 {% block title %}Paste{% endblock %}
 {% block content %}
@@ -39,13 +12,15 @@
 	<div class='pipediv'>|</div>
 	<div id='dir'><a href="?d">dir</a></div>
 	<div class='pipediv'>|</div>
+	<div id='indent'><a href="">indent</a></div>
+	<div class='pipediv'>|</div>
 	<div id='lexer'> {{ stats['lexer'] }} </div>
 	<div class='pipediv'>|</div>
 	<div id='lines'> {{ stats['lines'] }} lines</div>
 	<div class='pipediv'>|</div>
 	<div id='sloc'> {{ stats['sloc'] }} sloc </div>
 	<div class='pipediv'>|</div>
-	<div id='sloc'> {{ stats['size']/1000 }} kB</div>
+	<div id='size'> {{ stats['size']/1000 }} kB</div>
 	{% with messages = get_flashed_messages() %}
 	{% if messages %}
 	<div class='pipediv'>|</div>

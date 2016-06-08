@@ -4,7 +4,7 @@
 from random import getrandbits
 from base64 import urlsafe_b64encode
 from datetime import date, datetime, timedelta
-#-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
 import psycopg2
 import psycopg2.extras
 
@@ -45,7 +45,7 @@ def plain(text):
 def paste_stats(text):
 	stats = {}
 	stats['lines'] = len(text.split('\n'))
-	stats['sloc'] = stats['lines'] - len(text.split('\n\n')) 
+	stats['sloc'] = stats['lines'] - len(text.split('\n\n'))
 	stats['size'] = len(text.encode('utf-8'))
 	return stats
 
@@ -91,7 +91,7 @@ def db_burn(db, pasteid):
 def newpaste():
 	if request.method == 'POST':
 		paste_opt = {}
-		for param in config.defaults: #init form with defaults
+		for param in config.defaults: #init form parameters with defaults
 				paste_opt[param] = config.defaults[param]
 		for param in request.form:
 			if param in paste_opt:
@@ -99,7 +99,9 @@ def newpaste():
 		if paste_opt['paste'] == '':
 			return config.empty_paste
 		try:
-			if not config.paste_limits['ttl_min'] < float(paste_opt['ttl']) < config.paste_limits['ttl_max']:
+			if not config.paste_limits['ttl_min'] < \
+						float(paste_opt['ttl']) < \
+						config.paste_limits['ttl_max']:
 				return config.invalid_ttl
 		except ValueError:
 			return config.invalid_ttl
@@ -143,45 +145,12 @@ def newpaste():
 	else:
 		abort(405)
 
-@app.route('/plain/<pasteid>', methods=['GET', 'DELETE'])
-@app.route('/raw/<pasteid>', methods=['GET', 'DELETE'])
-def viewraw(pasteid):
-	if request.method == 'GET':
-		with psycopg2.connect(config.dsn) as db:
-			result = db_getpaste(db, pasteid)
-			if not result:
-				abort(404)
-			if result['burn'] == 0 or result['expiration'] < datetime.utcnow():
-				db_deletepaste(db, pasteid)
-				abort(404)
-			elif result['burn'] > 0:
-				db_burn(db, pasteid)
-			return plain(result['paste'])
-	
-	if request.method == 'DELETE':
-		with psycopg2.connect(config.dsn) as db:
-			result = db_getpaste(db, pasteid)
-			if not result:
-				return config.msg_err_404
-			elif result['token'] in request.form:
-				db_deletepaste(db, pasteid)
-			elif 'token' in request.headers and result['token'] == request.headers.get('token'):
-				db_deletepaste(db, pasteid)
-			else:
-				return config.msg_err_401
-	abort(405)	
-
 @app.route('/<pasteid>', methods=['GET', 'DELETE'])
 def viewpaste(pasteid):
 	if request.method == 'GET':
-		if request.args.get('r') is not None:
-			return url_for(viewraw, pasteid)
 		direction = 'ltr'
-		if request.args.get('d') is not None:
-			direction = 'rtl'
 		with psycopg2.connect(config.dsn) as db:
 			result = db_getpaste(db, pasteid)
-			
 			if not result:
 				abort(404)
 			if result['burn'] == 0 or result['expiration'] < datetime.utcnow():
@@ -189,7 +158,10 @@ def viewpaste(pasteid):
 				abort(404)
 			elif result['burn'] > 0:
 				db_burn(db, pasteid)
-			
+			if request.args.get('r') is not None:
+				return plain(result['paste'])
+			if request.args.get('d') is not None:
+				direction = 'rtl'
 			lexer = get_lexer_by_name(result['lexer'])
 			formatter = HtmlFormatter(nowrap=True, cssclass='paste')
 			paste = highlight(result['paste'], lexer, formatter)
@@ -217,20 +189,17 @@ def viewpaste(pasteid):
 	else:
 		abort(405)
 
-@app.route('/<pasteid>/<token>', methods=['GET','DELETE'])
+@app.route('/<pasteid>/<token>', methods=['GET'])
 def	deletepaste(pasteid, token):
 	with psycopg2.connect(config.dsn) as db:
 		result = db_getpaste(db, pasteid)
 		if not result:
-			return config.err_404
+			abort(404)
 		elif result['token'] == token:
 		    db_deletepaste(db, pasteid)
-		    return config.msg_paste_deleted
-		elif 'token' in request.headers and result['token'] == request.headers.get('token'):
-			db_deletepaste(db, pasteid)
-			return config.paste_deleted
+		    return render_template('deleted.html')
 		else:
-			return config.msg_err_401
+			abort(401)
 			
 @app.route('/about/api')
 def aboutapi():
@@ -248,9 +217,7 @@ def statspage():
 def page_not_found(e):
 	return render_template('404.html'), 404
 
-
-#@app.errorhandler(500)
-@app.route('/500.html')
+@app.errorhandler(500)
 def internal_server_error():
 	return render_template('500.html'), 500
 
