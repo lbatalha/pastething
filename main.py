@@ -181,8 +181,9 @@ def viewpaste(pasteid):
 					'size': result['size'],
 					'lexer': lexer.name
 			}
+			del_url = pasteid + "/" + result['token']
 			return render_template('viewpaste.html', \
-					stats=stats, paste=paste.split("\n"), direction=direction, year=year)
+				stats=stats, paste=paste.split("\n"), direction=direction, delete=del_url, year=year)
 		abort(500)
 	elif request.method == 'DELETE':
 		with psycopg2.connect(config.dsn) as db:
