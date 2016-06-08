@@ -17,6 +17,7 @@ from flask import Flask, \
 		render_template, url_for, flash, \
 		request, redirect, Response, abort
 
+from stats import pasteview, pastecount
 import config
 
 app = Flask(__name__)
@@ -27,6 +28,8 @@ cursor_factory = psycopg2.extras.DictCursor
 
 lexers_all = get_all_lexers()
 year = date.today().year
+
+
 
 def base_encode(num):
 	if not num:
@@ -122,19 +125,21 @@ def newpaste():
 			url_len = config.url_len
 			paste_opt['pasteid'] = ''
 			while url_collision(db, paste_opt['pasteid']):
-				for i in range(url_len):
+				for i in range(config.url_len, url_len):
 					paste_opt['pasteid'] += base_encode(getrandbits(6))
 				url_len += 1
 			
 			paste_opt['token'] = \
 				urlsafe_b64encode(getrandbits(48).to_bytes(config.token_len, 'little')).decode('utf-8')
 			
-			stats = paste_stats(paste_opt['paste'])
+			stats = paste_stats(paste_opt['paste']) #generate text stats
 			
 			db_newpaste(db, paste_opt, stats)
 			
-			if request.path != '/newpaste': #plaintext reply
-				return paste_opt['token'] + " - " + url_for('viewraw', pasteid = paste_opt['pasteid'])
+			pastecount(db) #increment total pastes
+
+			if request.path != '/newpaste': #plaintext reply 
+				return paste_opt['token'] + " - " + url_for('viewpaste', pasteid = paste_opt['pasteid']) + "?raw"
 			
 			flash(paste_opt['token'])
 		return redirect(paste_opt['pasteid'])
@@ -158,13 +163,19 @@ def viewpaste(pasteid):
 				abort(404)
 			elif result['burn'] > 0:
 				db_burn(db, pasteid)
-			if request.args.get('r') is not None:
+			
+			pasteview(db) #count towards total paste views
+
+			if request.args.get('raw') is not None:
 				return plain(result['paste'])
+			
 			if request.args.get('d') is not None:
 				direction = 'rtl'
+			
 			lexer = get_lexer_by_name(result['lexer'])
 			formatter = HtmlFormatter(nowrap=True, cssclass='paste')
 			paste = highlight(result['paste'], lexer, formatter)
+
 			stats = {'lines': result['lines'],
 					'sloc': result['sloc'],
 					'size': result['size'],
@@ -211,7 +222,7 @@ def aboutpage():
 
 @app.route('/stats')
 def statspage():
-	return render_template('stats.html')
+	return render_template('stats.html', stats = stats)
 
 @app.errorhandler(404)
 def page_not_found(e):
