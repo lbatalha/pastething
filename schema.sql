@@ -19,9 +19,16 @@ CREATE TABLE stats (
 	metric	varchar(16) PRIMARY KEY NOT NULL,
 	counter bigserial NOT NULL
 );
+CREATE TABLE dailystats (
+	date  		timestamp PRIMARY KEY	NOT NULL,
+	pastecount 	bigserial 		NOT NULL,
+	pasteviews 	bigserial 		NOT NULL
+);
+
 INSERT INTO stats (metric, counter) VALUES ('totalpastes', 0);
 INSERT INTO stats (metric, counter) VALUES ('totalviews', 0);
 
 GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO pastebin;
-
+GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO pastebin;
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON SEQUENCES TO pastebin;
 
