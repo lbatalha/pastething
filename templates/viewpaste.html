@@ -24,7 +24,7 @@
 	{% with messages = get_flashed_messages() %}
 	{% if messages %}
 	<div class='pipediv'>|</div>
-	<div id='delete'><a href="">Token: <span id='token'>{{ messages[0] }}</span></a></div>
+	<div><a id="rm" href="">delete </a> token: <span id='token'>{{ messages[0] }}</span></div>
 	{% endif %}
 	{% endwith %}
 </div>
@@ -35,5 +35,4 @@
 		{% endfor %}
 	</ol>
 </div>
-
 {% endblock %}
