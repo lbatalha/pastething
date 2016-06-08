@@ -3,6 +3,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
 	document.getElementById("wrap").addEventListener("click", wrap);
 	document.getElementById("dir").addEventListener("click", dir);
 	document.getElementById("indent").addEventListener("click", indent);
+	document.getElementById("delete").addEventListener("click", token);
 });
 function wrap(evt) {
 	var lines = document.getElementsByClassName("pastelines");
@@ -38,4 +39,9 @@ function indent(evt) {
 		
 	}
 	evt.preventDefault();
+}
+
+function token(evt) {
+	var value = document.getElementById("token");
+	window.location.href = window.location.href + "/" + value;
 }
