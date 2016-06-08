@@ -61,6 +61,7 @@ a:hover{ color: #e6db74}
 	padding-top: 1em;
 	color: #75715e;
 	text-align: center;
+	font-size: 0.75em;
 }
 
 
@@ -74,15 +75,17 @@ a:hover{ color: #e6db74}
 	align-items: center;
 	border: 3px solid;
 	border-color: #272822;
-	max-height:2.5em;
+	max-height:3em;
 	min-height: 1.5em;
 	padding: 0.3em 3ch 0.3em 3ch;
 	color: #888481;
-	font-size: 0.75em;
+	font-size: 0.8em;
 }
 .pipediv {
 	margin: 0 0.5em 0 0.5em;
 }
+
+#info a:hover{ color: #f92672; }
 
 /*--- paste body ----*/
 
