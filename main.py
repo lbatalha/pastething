@@ -181,7 +181,7 @@ def viewpaste(pasteid):
 					'size': result['size'],
 					'lexer': lexer.name
 			}
-			del_url = pasteid + "/" + result['token']
+			del_url = url_for('deletepaste', pasteid=pasteid, token=result['token'])
 			return render_template('viewpaste.html', \
 				stats=stats, paste=paste.split("\n"), direction=direction, delete=del_url, year=year)
 		abort(500)
