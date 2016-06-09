@@ -6,7 +6,7 @@ from base64 import urlsafe_b64encode
 from datetime import date, datetime, timedelta
 
 import psycopg2
-import psycopg2.extras
+from psycopg2.extras import DictCursor
 
 import pygments
 from pygments import highlight
@@ -17,14 +17,13 @@ from flask import Flask, \
 		render_template, url_for, flash, \
 		request, redirect, Response, abort
 
-from stats import pasteview, pastecount
+from stats import pasteview, pastecount, getstats
 import config
 
 app = Flask(__name__)
 app.secret_key = config.secret_key
 app.config['MAX_CONTENT_LENGTH'] = config.max_content_length
 
-cursor_factory = psycopg2.extras.DictCursor
 
 lexers_all = get_all_lexers()
 year = date.today().year
@@ -75,7 +74,7 @@ def db_newpaste(db, opt, stats):
 			stats['size'], stats['lines'], stats['sloc']))
 
 def db_getpaste(db, pasteid):
-	with db.cursor(cursor_factory=cursor_factory) as cur:
+	with db.cursor(cursor_factory = DictCursor) as cur:
 		cur.execute(("""SELECT * FROM pastes WHERE pasteid=%s;"""), (pasteid,))
 		r = cur.fetchone()
 	return r
@@ -114,9 +113,10 @@ def newpaste():
 		except pygments.util.ClassNotFound:
 			paste_opt['lexer'] = 'text'
 		try:
-			if paste_opt['burn'] == '':
+			print(paste_opt['burn'])
+			if paste_opt['burn'] == '' or paste_opt['burn'] == config.defaults['burn']:
 				paste_opt['burn'] = config.defaults['burn']
-			elif not config.burn_min <= int(paste_opt['burn']) <= config.burn_max:
+			elif not config.paste_limits['burn_min'] <= int(paste_opt['burn']) <= config.paste_limits['burn_max']:
 				return config.invalid_burn
 		except ValueError:
 			return config.invalid_burn
@@ -139,7 +139,7 @@ def newpaste():
 			pastecount(db) #increment total pastes
 
 			if request.path != '/newpaste': #plaintext reply 
-				return paste_opt['token'] + " - " + url_for('viewpaste', pasteid = paste_opt['pasteid']) + "?raw"
+				return paste_opt['token'] + " - " + config.domain + url_for('viewraw', pasteid = paste_opt['pasteid'])
 			
 			flash(paste_opt['token'])
 		return redirect(paste_opt['pasteid'])
@@ -149,6 +149,7 @@ def newpaste():
 				ttl = config.ttl_options, paste_limits = config.paste_limits, year = year)
 	else:
 		abort(405)
+
 
 @app.route('/<pasteid>', methods=['GET', 'DELETE'])
 def viewpaste(pasteid):
@@ -188,18 +189,53 @@ def viewpaste(pasteid):
 	elif request.method == 'DELETE':
 		with psycopg2.connect(config.dsn) as db:
 			result = db_getpaste(db, pasteid)
+			print(result['token'])
 			if not result:
-				return config.err_404
-			elif result['token'] in request.form:
+				return config.msg_err_404, 404
+			elif 'token' in request.form and result['token'] == request.form['token']:
 				db_deletepaste(db, pasteid)
-				return config.msg_paste_deleted
+				return config.msg_paste_deleted, 200
 			elif 'token' in request.headers and result['token'] == request.headers.get('token'):
 				db_deletepaste(db, pasteid)
-				return config.paste_deleted
+				return config.msg_paste_deleted, 200
 			else:
-				return config.msg_err_401
+				return config.msg_err_401, 401	
 	else:
 		abort(405)
+
+@app.route('/plain/<pasteid>', methods=['GET', 'DELETE'])
+@app.route('/raw/<pasteid>', methods=['GET', 'DELETE'])
+def viewraw(pasteid):
+	if request.method == 'GET':
+		with psycopg2.connect(config.dsn) as db:
+			result = db_getpaste(db, pasteid)
+			if not result:
+				return config.msg_err_404, 404
+			if result['burn'] == 0 or result['expiration'] < datetime.utcnow():
+				db_deletepaste(db, pasteid)
+				return config.msg_err_404, 404
+			elif result['burn'] > 0:
+				db_burn(db, pasteid)
+	
+			pasteview(db) #count towards total paste views
+			
+			return result['paste']
+
+	elif request.method == 'DELETE':
+		with psycopg2.connect(config.dsn) as db:
+			result = db_getpaste(db, pasteid)
+			if not result:
+				return config.msg_err_404, 404
+			elif 'token' in request.form and result['token'] == request.form['token']:
+				db_deletepaste(db, pasteid)
+				return config.msg_paste_deleted, 200
+			elif 'token' in request.headers and result['token'] == request.headers.get('token'):
+				db_deletepaste(db, pasteid)
+				return config.msg_paste_deleted, 200
+			else:
+				return config.msg_err_401, 401
+	else:
+		return "invalid http method\n"
 
 @app.route('/<pasteid>/<token>', methods=['GET'])
 def	deletepaste(pasteid, token):
@@ -223,7 +259,11 @@ def aboutpage():
 
 @app.route('/stats')
 def statspage():
-	return render_template('stats.html', year=year, stats = stats)
+	with psycopg2.connect(config.dsn) as db:
+		stats = getstats(db)
+		print(stats)
+		return render_template('stats.html', year=year, stats = stats)
+
 
 @app.errorhandler(404)
 def page_not_found(e):

@@ -1,3 +1,4 @@
+from psycopg2.extras import DictCursor
 from datetime import datetime
 
 def pastecount(db):
@@ -19,3 +20,20 @@ def dailystats(db, metric, today):
 				WHERE dailystats.date=%s;""".format(metric, metric, metric), \
 				(today, 1, today))
 
+def getstats(db):
+	stats = {}
+	with db.cursor(cursor_factory = DictCursor) as cur:
+		cur.execute("SELECT * FROM dailystats WHERE date=%s;", (datetime.utcnow().date(),))
+		stats['daily'] = cur.fetchone()
+		cur.execute("SELECT * FROM stats;")
+		stats['total'] = cur.fetchall()
+		return stats
+
+def growthgraph(db):
+	#TODO: fancy histogram with site usage
+	return True
+
+def expirationgraph(db):
+	csv = []
+	#TODO: fancy histogram with calculated paste expiration
+	return True
