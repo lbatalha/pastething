@@ -215,15 +215,15 @@ def	deletepaste(pasteid, token):
 			
 @app.route('/about/api')
 def aboutapi():
-	return render_template('api.html')
+	return render_template('api.html', year=year)
 
 @app.route('/about')
 def aboutpage():
-	return render_template('about.html')
+	return render_template('about.html', year=year)
 
 @app.route('/stats')
 def statspage():
-	return render_template('stats.html', stats = stats)
+	return render_template('stats.html', year=year, stats = stats)
 
 @app.errorhandler(404)
 def page_not_found(e):
