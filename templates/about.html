@@ -5,6 +5,28 @@
 {% endblock %}
 {% block content %}
 <div id='about'>
-stuff
+<h3>
+<p>
+Pastething values security, privacy and freedom.
+</p></h3>
+<ul>
+<li><strong>Only accessible via HTTPS</strong>
+<li><p><strong>Sane default paste expiration</strong> - 1 hour
+<li><p><strong>Limited maximum paste lifetime</strong> - pastes can't live past 30 days
+<li><p><strong>Burn after reading</strong> - Set a view limit after which the paste will be deleted
+<li><p><strong>Delete tokens</strong> - receive a token after pasting, allowing you to delete at any time</li>
+<li><p><strong>Simple pages</strong> - Minimal javascript for convenience with graceful fallbacks, one session cookie used only between requests when posting, no images, no external resources
+<li><p><strong>~Pretty~</strong> - using the awesome <a href="http://pygments.org/">pygments</a> library to highlight code. Site themed with monokai - no more <span id='pierce'>eye-piercing white pages</span>
+<li><p><strong class='gentle'>Gentle</strong> - Stuff goes in, Stuff comes out - retrieve your original paste without mangling</li>
+<li><p><strong>Compatible</strong> - Dont like fancy browsers? Use whatever, we have a <a href="{{ url_for('aboutapi') }}">basic API</a>
+<li><p><strong>Simple URL</strong> - Pastes get assigned a decently short ID composed of alphanumeric characters without possibly misleading ones like iIloO0
+<li><p><strong>No indexing</strong> - Pastes are unlisted and assigned random IDs.
+<li><p><strong>Automatic Lexing</strong> - Full lazy mode: defaults to lexer auto-detection - pygments tries to find the best lexer for your input - <em>"60% of the time, it works every time"</em></li>
+<li><p><strong>No Tracking</strong> - no third party data exchange, no user identifiable data stored</li>
+<li><p><strong>Open Source</strong> - Don't trust us? <a href="https://github.com/lbatalha/pastething">check the source.</a>  Still don't trust us?  roll your own, its MIT licensed.
+<li><p><strong>No Cancer &trade;</strong>
+
+
+</ul>
 </div>
 {% endblock %}
