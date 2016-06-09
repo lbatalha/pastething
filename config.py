@@ -19,6 +19,7 @@ token_len =  6 #delete token length in bytes/characters
 #flask configuration
 secret_key = 'some_secret'
 max_content_length = 2 * 1024 * 1024 #max form upload size in bits
+domain = 'http://localhost:5000'
 
 #postgresql configuration
 dsn = "host=localhost port=6432 dbname='pastebin' user='pastebin' password='1234'"

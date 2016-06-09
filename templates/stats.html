@@ -5,6 +5,12 @@
 {% endblock %}
 {% block content %}
 <div id='about'>
-	{{ content }}
+	<h3>All Time </h3>
+	<p><strong>Pastes: </strong> {{ stats['total'][0][1] }}</p>
+	<p><strong>Views: </strong> {{ stats['total'][1][1] }}</p>
+	<br>
+	<h3>Today</h3>
+	<p><strong>Pastes: </strong> {{ stats['daily']['pastecount'] }}</p>
+	<p><strong>Views: </strong>{{ stats['daily']['pasteviews'] }}</p>
 </div>
 {% endblock %}
