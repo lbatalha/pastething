@@ -113,7 +113,6 @@ def newpaste():
 		except pygments.util.ClassNotFound:
 			paste_opt['lexer'] = 'text'
 		try:
-			print(paste_opt['burn'])
 			if paste_opt['burn'] == '' or paste_opt['burn'] == config.defaults['burn']:
 				paste_opt['burn'] = config.defaults['burn']
 			elif not config.paste_limits['burn_min'] <= int(paste_opt['burn']) <= config.paste_limits['burn_max']:
