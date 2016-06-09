@@ -1,10 +1,30 @@
 {% extends 'layout.html' %}
-{% block title %}New Paste{% endblock %}
+{% block title %}API{% endblock %}
 {% block head %}
 {{ super() }}
 {% endblock %}
 {% block content %}
 <div id='about'>
-	{{ content }}
+<h2>API</h2>
+<p>At the moment we provide a simple HTTP API</p>
+<p>Its mainly useful for non-browser such as curl/wget</p>
+<ul>
+	<li><strong>New Paste</strong> - Send a POST request to / with the available parameters:</li>
+	<ul>
+		<li>paste - the thing you want to paste - REQUIRED</li>
+		<li>ttl - the time in hours the paste will be available for before deletion - defaults to 1 hour</li>
+		<li>lexer - define the lexer to use for the paste - defaults to auto-detection.</li>
+		<li>burn - number of times the paste can be viewed before it is deleted - disabled by default</li>
+	</ul>
+	<li><strong>Retrieve raw paste</strong> - Send a GET request to /&ltpasteid&gt with the 'raw' parameter (./&ltpasteid&gt?raw)</li>
+	<li><strong>Delete a paste</strong> - Use the token received when creating the paste</li>
+	<ul>
+		<li>Send a DELETE request to /&ltpasteid&gt with the parameter 'token=&ltyourtoken&gt' or set the request header 'token: &ltyourtoken&gt'</li>
+		<li>Send a GET request to /&ltpasteid&gt/&ltyourtoken&gt (this will reply with the same html page as clicking delete in the browser)</li>
+	</ul>
+</ul>
+
+<p>At some point we will provide a REST API, check back for updates.</p>
+
 </div>
 {% endblock %}
