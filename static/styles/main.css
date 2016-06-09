@@ -122,6 +122,7 @@ a:hover{ color: #e6db74}
 	resize: vertical;
 	width: 100%;
 	height: auto;
+	min-height: 30em;
 	margin: auto;
 	padding: 0.5em;
 	border: 0;
@@ -179,12 +180,21 @@ a:hover{ color: #e6db74}
 /*--- About pages ----*/
 #about {
 	padding: 2em 2ch 2em 2ch;
-	color: #f8f8f2;
+	color: #95917e;
 	background-color: #272822;
 	white-space: normal;
+	font-size: 1em;
+	font-family: monospace;
+	text-justify: kashida;
+}
+#about strong{
+	color: #e5e1de;
 }
 
-
+#about #pierce{
+	color: #ffffff;
+	font-weight: bold;
+}
 /*--- error pages ----*/
 
 #errorpage h1{
