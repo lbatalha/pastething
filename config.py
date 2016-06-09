@@ -22,7 +22,7 @@ max_content_length = 2 * 1024 * 1024 #max form upload size in bits
 domain = 'http://localhost:5000'
 
 #postgresql configuration
-dsn = "host=localhost port=6432 dbname='pastebin' user='pastebin' password='1234'"
+dsn = "host=localhost port=5432 dbname='pastebin' user='pastebin' password='1234'"
 
 #paste url
 url_len = 1 #minimum paste url length in characters
