@@ -191,6 +191,10 @@ a:hover{ color: #e6db74}
 	color: #e5e1de;
 }
 
+#about li{
+	color: #e5e1de;
+}
+
 #about #pierce{
 	color: #ffffff;
 	font-weight: bold;
@@ -216,7 +220,7 @@ a:hover{ color: #e6db74}
 
 .hll { background-color: #49483e }
 .c { color: #75715e } /* Comment */
-.err { color: #960050; background-color: #f92672 } /* Error */
+.err { color: #760030; background-color: #f92672 } /* Error */
 .k { color: #66d9ef } /* Keyword */
 .l { color: #ae81ff } /* Literal */
 .n { color: #f8f8f2 } /* Name */
