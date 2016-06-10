@@ -1,3 +1,4 @@
+DROP TABLE IF EXISTS pastes, dailystats, stats;
 \connect postgres
 DROP DATABASE IF EXISTS pastebin;
 CREATE ROLE pastebin WITH LOGIN PASSWORD '1234';
