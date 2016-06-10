@@ -11,5 +11,5 @@
 ##Installation
 
 * install dependencies
-* setup db with db.sql
+* setup db with schema.sql
 * configure app in config.py
