@@ -3,7 +3,7 @@
 	<head>
 		{% block head %}
 		<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles/main.css') }}">
-		<title>{% block title %}{% endblock %} - pastething</title>
+		<title>{% block title %}{% endblock %} - cpy.pt</title>
 		{% endblock %}
 	</head>
 	<body>
@@ -11,7 +11,7 @@
 			<div id='wrapper' dir='{{ direction }}'>
 				<div id='header'>
 					<div id='logo'>
-						<a href="/">pastething</a>
+						<a href="/">cpy.pt</a>
 					</div>
 					{% block header %}{% endblock %}
 					<div id='nav'>
@@ -23,7 +23,7 @@
 				{% block content %}{% endblock %}
     			<div id="footer">
     				{% block footer %}
-						Copyright &copy; {{ year }} pastething
+						Copyright &copy; {{ year }} cpy.pt
     				{% endblock %}
 					</div>
 			</div>
