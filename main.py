@@ -188,7 +188,6 @@ def viewpaste(pasteid):
 	elif request.method == 'DELETE':
 		with psycopg2.connect(config.dsn) as db:
 			result = db_getpaste(db, pasteid)
-			print(result['token'])
 			if not result:
 				return config.msg_err_404, 404
 			elif 'token' in request.form and result['token'] == request.form['token']:
@@ -260,7 +259,6 @@ def aboutpage():
 def statspage():
 	with psycopg2.connect(config.dsn) as db:
 		stats = getstats(db)
-		print(stats)
 		return render_template('stats.html', year=year, stats = stats)
 
 
@@ -274,4 +272,4 @@ def internal_server_error():
 
 if __name__ == '__main__':
 	app.debug = True
-	app.run(host='0.0.0.0')
+	app.run()
