@@ -48,7 +48,10 @@ def plain(text):
 def paste_stats(text):
 	stats = {}
 	stats['lines'] = len(text.split('\n'))
-	stats['sloc'] = stats['lines'] - len(text.split('\n\n'))
+	stats['sloc'] = stats['lines']
+	for line in text.split('\n'):
+		if not line.strip():
+			stats['sloc'] -= 1
 	stats['size'] = len(text.encode('utf-8'))
 	return stats
 
@@ -183,7 +186,12 @@ def viewpaste(pasteid):
 					'lexer': lexer.name
 			}
 			messages = get_flashed_messages()
-			del_url = url_for('deletepaste', pasteid=pasteid, token=messages[0])
+			if messages:
+				token = messages[0]
+			else:
+				token = ''
+
+			del_url = url_for('deletepaste', pasteid=pasteid, token=token)
 			return render_template('viewpaste.html', \
 				stats=stats, paste=paste.split("\n"), direction=direction, delete=del_url, year=year)
 		abort(500)
