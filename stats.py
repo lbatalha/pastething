@@ -26,7 +26,11 @@ def getstats(db):
 		cur.execute("SELECT * FROM dailystats WHERE date=%s;", (datetime.utcnow().date(),))
 		stats['daily'] = cur.fetchone()
 		cur.execute("SELECT * FROM stats;")
-		stats['total'] = cur.fetchall()
+		totalstats = {}
+		for i in cur.fetchall():
+			totalstats[i[0]] = i[1]
+		stats['total'] = totalstats
+		print()
 		return stats
 
 def growthgraph(db):
