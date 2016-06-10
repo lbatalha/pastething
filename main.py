@@ -273,5 +273,5 @@ def internal_server_error():
 	return render_template('500.html'), 500
 
 if __name__ == '__main__':
-	app.debug = False
+	app.debug = True
 	app.run(host='0.0.0.0')
