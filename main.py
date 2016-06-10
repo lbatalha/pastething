@@ -182,7 +182,7 @@ def viewpaste(pasteid):
 					'size': result['size'],
 					'lexer': lexer.name
 			}
-
+			messages = get_flashed_messages()
 			del_url = url_for('deletepaste', pasteid=pasteid, token=messages[0])
 			return render_template('viewpaste.html', \
 				stats=stats, paste=paste.split("\n"), direction=direction, delete=del_url, year=year)
