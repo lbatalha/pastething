@@ -138,7 +138,7 @@ def newpaste():
 			pastecount(db) #increment total pastes
 
 			if request.path != '/newpaste': #plaintext reply 
-				return "token: " + paste_opt['token'] + " - " + config.domain + url_for('viewraw', pasteid = paste_opt['pasteid']) + "\n"
+				return "token: " + paste_opt['token'] + " | " + config.domain + url_for('viewraw', pasteid = paste_opt['pasteid']) + "\n"
 			
 			flash(paste_opt['token'])
 		return redirect(paste_opt['pasteid'])
