@@ -15,7 +15,8 @@ from pygments.formatters import HtmlFormatter
 
 from flask import Flask, \
 		render_template, url_for, flash, \
-		request, redirect, Response, abort
+		request, redirect, Response, abort, \
+		get_flashed_messages
 
 from stats import pasteview, pastecount, getstats
 import config
@@ -181,7 +182,8 @@ def viewpaste(pasteid):
 					'size': result['size'],
 					'lexer': lexer.name
 			}
-			del_url = url_for('deletepaste', pasteid=pasteid, token=result['token'])
+
+			del_url = url_for('deletepaste', pasteid=pasteid, token=messages[0])
 			return render_template('viewpaste.html', \
 				stats=stats, paste=paste.split("\n"), direction=direction, delete=del_url, year=year)
 		abort(500)
@@ -271,5 +273,5 @@ def internal_server_error():
 	return render_template('500.html'), 500
 
 if __name__ == '__main__':
-	app.debug = False
+	app.debug = True
 	app.run()
