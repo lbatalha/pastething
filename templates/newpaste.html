@@ -28,7 +28,7 @@
 					<option value='{{ entry[1] }}'>{{ entry[0] }}</option>
 				{% endfor %}
 			</select>
-			<input id='burninput' type='number' name='burn' min='{{ paste_limits['burn_min'] }}' max='{{ paste_limits['burn_max'] }}' placeholder='Burn' >
+			<input id='burninput' type='number' name='burn' min='0' max='{{ paste_limits['burn_max'] }}' placeholder='Burn' >
 			<input id='pastebutton' type='submit' value='Paste'>
 			
 		</div>

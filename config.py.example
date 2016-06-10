@@ -17,9 +17,9 @@ paste_limits = {
 token_len =  6 #delete token length in bytes/characters
 
 #flask configuration
-secret_key = 'some_secret'
+secret_key =  #set it to some string
 max_content_length = 2 * 1024 * 1024 #max form upload size in bits
-domain = 'https://cpy.pt'
+domain = 'https://cpy.pt' #set correctly, used for raw POST response
 
 #postgresql configuration
 dsn = "host=localhost port=5432 dbname='pastebin' user='pastebin' password='1234'"

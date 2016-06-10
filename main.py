@@ -113,7 +113,7 @@ def newpaste():
 		except pygments.util.ClassNotFound:
 			paste_opt['lexer'] = 'text'
 		try:
-			if paste_opt['burn'] == '' or paste_opt['burn'] == config.defaults['burn']:
+			if paste_opt['burn'] == '' or paste_opt['burn'] == 0 or paste_opt['burn'] == config.defaults['burn']:
 				paste_opt['burn'] = config.defaults['burn']
 			elif not config.paste_limits['burn_min'] <= int(paste_opt['burn']) <= config.paste_limits['burn_max']:
 				return config.invalid_burn
@@ -138,7 +138,7 @@ def newpaste():
 			pastecount(db) #increment total pastes
 
 			if request.path != '/newpaste': #plaintext reply 
-				return paste_opt['token'] + " - " + config.domain + url_for('viewraw', pasteid = paste_opt['pasteid']) + "\n"
+				return "token: " + paste_opt['token'] + " - " + config.domain + url_for('viewraw', pasteid = paste_opt['pasteid']) + "\n"
 			
 			flash(paste_opt['token'])
 		return redirect(paste_opt['pasteid'])
@@ -271,5 +271,5 @@ def internal_server_error():
 	return render_template('500.html'), 500
 
 if __name__ == '__main__':
-	app.debug = True
+	app.debug = False
 	app.run()
