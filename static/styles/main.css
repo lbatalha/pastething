@@ -90,7 +90,7 @@ a:hover{ color: #e6db74}
 
 #content {
 	background-color: #272822;
-	padding: 0 0 1em 0;
+	padding-bottom: 0.25em;
 	overflow-x: auto;
 	
 }
