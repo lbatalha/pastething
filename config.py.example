@@ -25,7 +25,7 @@ domain = 'http://localhost:5000'
 dsn = "host=localhost port=5432 dbname='pastebin' user='pastebin' password='1234'"
 
 #paste url
-url_len = 1 #minimum paste url length in characters
+url_len = 8 #minimum paste url length in characters
 url_alph = tuple("123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghkmnpqrstuvwxyz") #alphabet used to generate paste url
 base = len(url_alph)
 

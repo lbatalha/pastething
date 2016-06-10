@@ -124,8 +124,8 @@ def newpaste():
 			url_len = config.url_len
 			paste_opt['pasteid'] = ''
 			while url_collision(db, paste_opt['pasteid']):
-				for i in range(config.url_len, url_len):
-					paste_opt['pasteid'] += base_encode(getrandbits(6))
+				for i in range(url_len):
+					paste_opt['pasteid'] += base_encode(getrandbits(6))	
 				url_len += 1
 			
 			paste_opt['token'] = \
@@ -138,7 +138,7 @@ def newpaste():
 			pastecount(db) #increment total pastes
 
 			if request.path != '/newpaste': #plaintext reply 
-				return paste_opt['token'] + " - " + config.domain + url_for('viewraw', pasteid = paste_opt['pasteid'])
+				return paste_opt['token'] + " - " + config.domain + url_for('viewraw', pasteid = paste_opt['pasteid']) + "\n"
 			
 			flash(paste_opt['token'])
 		return redirect(paste_opt['pasteid'])

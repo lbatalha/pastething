@@ -5,7 +5,7 @@ CREATE DATABASE pastebin OWNER pastebin;
 GRANT ALL PRIVILEGES ON DATABASE pastebin TO pastebin;
 \connect pastebin
 CREATE TABLE pastes(
-	pasteid 	varchar(10) PRIMARY KEY NOT NULL,
+	pasteid 	varchar(32) PRIMARY KEY NOT NULL,
 	token 		varchar(32)		NOT NULL,
 	lexer 		varchar(512) 		NOT NULL,
 	expiration 	timestamp 		NOT NULL,
