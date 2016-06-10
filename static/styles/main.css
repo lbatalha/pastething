@@ -7,7 +7,6 @@ body {
 #maindiv {
 	max-width: 110ch;
 	min-width: 60ch;
-	margin: auto;
 }
 
 a { text-decoration: none; }
@@ -99,11 +98,9 @@ a:hover{ color: #e6db74}
 .linenos { 
 	list-style: decimal;
 	color: #888481;
-	line-height: 1.25em;
 	padding: 0;
-	margin: 0.1em 0.5em 0.1em 2ch;
-	height: auto;
-
+	margin: 0em 0.5em 0em 2ch;
+	height: 1.25em;
 }
 
 .pastelines {
