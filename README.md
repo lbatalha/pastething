@@ -2,7 +2,7 @@
 
 ##Dependencies
 
-* postgresql
+* postgresql-9.5 <
 * python3
 * python3-flask
 * python3-pygments
