@@ -8,7 +8,7 @@ function wrap(evt){
     var lines = document.getElementsByClassName("pastelines");
     for(i in lines){
         lines[i].style.whiteSpace = 
-            ((window.getComputedStyle(lines[i]).getPropertyValue("white-space") == "pre") ?
+            (window.getComputedStyle(lines[i]).getPropertyValue("white-space") == "pre") ?
             "pre-wrap" :
             "pre";
     }
