@@ -12,4 +12,4 @@
 
 * install dependencies
 * setup db with schema.sql
-* configure app in config.py
+* copy config.py.example as config.py and configure it
