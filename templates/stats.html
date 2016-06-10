@@ -6,8 +6,8 @@
 {% block content %}
 <div id='about'>
 	<h3>All Time </h3>
-	<p><strong>Pastes: </strong> {{ stats['total'][0][1] }}</p>
-	<p><strong>Views: </strong> {{ stats['total'][1][1] }}</p>
+	<p><strong>Pastes: </strong> {{ stats['total']['totalpastes'] }}</p>
+	<p><strong>Views: </strong> {{ stats['total']['totalviews'] }}</p>
 	<br>
 	<h3>Today</h3>
 	<p><strong>Pastes: </strong> {{ stats['daily']['pastecount'] }}</p>

@@ -2,3 +2,4 @@ __pycache__/
 pylintrc
 test/
 *.log
+config.py
