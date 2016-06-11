@@ -24,14 +24,14 @@
 	{% with messages = get_flashed_messages() %}
 	{% if messages %}
 	<div class='pipediv'>|</div>
-	<div id='delete'><a href="{{ delete }}">delete </a> token: {{ messages[0] }}</span></div>
+	<div id='delete'><a href="{{ delete }}">delete </a> token: {{ messages[0] }}</div>
 	{% endif %}
 	{% endwith %}
 </div>
 <div id='content'>
 	<ol>
 		{% for i in range(stats['lines']) %}
-		<li class='linenos'><pre class='pastelines'>{{paste[i]|safe}}</pre></li>
+		<li class='linenos'><pre class='pastelines'>{{paste[i]|safe}}</pre>&nbsp</li>
 		{% endfor %}
 	</ol>
 </div>
