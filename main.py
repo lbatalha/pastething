@@ -26,7 +26,6 @@ app.secret_key = config.secret_key
 app.config['MAX_CONTENT_LENGTH'] = config.max_content_length
 
 
-lexers_all = get_all_lexers()
 year = date.today().year
 
 
@@ -147,6 +146,7 @@ def newpaste():
 			flash(paste_opt['token'])
 		return redirect(paste_opt['pasteid'])
 	elif request.method == 'GET':
+		lexers_all = get_all_lexers()
 		return render_template('newpaste.html', \
 				lexers_all = lexers_all, lexers_common = config.lexers_common, \
 				ttl = config.ttl_options, paste_limits = config.paste_limits, year = year)
