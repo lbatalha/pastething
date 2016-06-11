@@ -29,7 +29,7 @@ function dir(evt) {
 function indent(evt) {
 	evt.preventDefault();
 	var lines = document.getElementsByClassName("pastelines");
-	var value = window.getComputedStyle(lines[i]).getPropertyValue("tab-size")
+	var value = window.getComputedStyle(lines[0]).getPropertyValue("tab-size")
 	for(var i = 0, il = lines.length; i < il; i++){
 		if(value == "2"){
 			lines[i].style.tabSize = "4";
