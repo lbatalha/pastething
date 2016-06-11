@@ -7,8 +7,9 @@ document.addEventListener("DOMContentLoaded", function(event) {
 function wrap(evt) {
 	evt.preventDefault();
 	var lines = document.getElementsByClassName("pastelines");
+	var value = window.getComputedStyle(lines[0]).getPropertyValue("white-space")
 	for(var i = 0, il = lines.length; i < il; i++){
-		if(window.getComputedStyle(lines[i]).getPropertyValue("white-space") == "pre"){
+		if(value == "pre"){
 			lines[i].style.whiteSpace = "pre-wrap";
 		}else{
 			lines[i].style.whiteSpace = "pre";
@@ -18,19 +19,21 @@ function wrap(evt) {
 function dir(evt) {
 	evt.preventDefault();
 	var dir = document.getElementById("wrapper");
-	dir.setAttribute(
-		"dir",
-		dir.getAttribute("dir").split('').reverse().join('')
-	);
+	if(dir.getAttribute("dir") == "ltr"){
+		dir.setAttribute("dir", "rtl");
+	}else{
+		dir.setAttribute("dir", "ltr");
+	}		
 
 }
 function indent(evt) {
 	evt.preventDefault();
 	var lines = document.getElementsByClassName("pastelines");
+	var value = window.getComputedStyle(lines[i]).getPropertyValue("tab-size")
 	for(var i = 0, il = lines.length; i < il; i++){
-		if(window.getComputedStyle(lines[i]).getPropertyValue("tab-size") == "2"){
+		if(value == "2"){
 			lines[i].style.tabSize = "4";
-		}else if(window.getComputedStyle(lines[i]).getPropertyValue("tab-size") == "4"){
+		}else if(value == "4"){
 			lines[i].style.tabSize = "8";
 		}else{
 			lines[i].style.tabSize = "2";

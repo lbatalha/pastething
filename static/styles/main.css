@@ -107,7 +107,7 @@ a:hover{ color: #e6db74}
 .pastelines {
 	white-space: pre;
 	word-wrap: break-word;
-	tab-size: 4;
+	tab-size: 3;
 	padding: 0;
 	margin: 0;
 
