@@ -17,7 +17,7 @@ CREATE TABLE pastes(
 	sloc		int
 );
 CREATE TABLE stats (
-	metric	varchar(16) PRIMARY KEY NOT NULL,
+	metric	varchar(32) PRIMARY KEY NOT NULL,
 	counter bigserial NOT NULL
 );
 CREATE TABLE dailystats (

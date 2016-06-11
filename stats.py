@@ -18,7 +18,7 @@ def dailystats(db, metric, today):
 				ON CONFLICT (date) \
 				DO UPDATE SET {} = dailystats.{} + 1 \
 				WHERE dailystats.date=%s;""".format(metric, metric, metric), \
-				(today, 0, today))
+				(today, 1, today))
 
 def getstats(db):
 	stats = {}
