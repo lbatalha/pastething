@@ -7,6 +7,7 @@ body {
 #maindiv {
 	max-width: 110ch;
 	min-width: 60ch;
+	margin: auto;
 }
 
 a { text-decoration: none; }
