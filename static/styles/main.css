@@ -101,7 +101,7 @@ a:hover{ color: #e6db74}
 	color: #888481;
 	padding: 0;
 	margin: 0em 0.5em 0em 2ch;
-	height: 1.25em;
+	min-height: 1.25em;
 }
 
 .pastelines {
