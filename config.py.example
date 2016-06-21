@@ -4,7 +4,7 @@ defaults = {
 	'lexer': 'auto',
 	'burn': -1,
 	'paste': '',
-	'raw': ''
+	'raw': 'true'
 }
 
 #paste options

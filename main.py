@@ -141,7 +141,7 @@ def newpaste():
 			pastecount(db) #increment total pastes
 
 			if request.path != '/newpaste': #plaintext reply 
-				if paste_opt['raw'] != '':
+				if paste_opt['raw'] == 'true':
 					reptype = 'viewraw'
 				else:
 					reptype = 'viewpaste'
