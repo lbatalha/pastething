@@ -231,7 +231,7 @@ def viewraw(pasteid):
 	
 			pasteview(db) #count towards total paste views
 			
-			return result['paste']
+			return plain(result['paste'])
 
 	elif request.method == 'DELETE':
 		with psycopg2.connect(config.dsn) as db:
