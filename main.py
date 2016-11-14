@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 
 from random import getrandbits
 from base64 import urlsafe_b64encode
@@ -58,7 +57,7 @@ def url_collision(db, route):
 	for rule in app.url_map.iter_rules():
 		if rule.rule == '/' + route:
 			return True
-	with db.cursor() as cur: 
+	with db.cursor() as cur:
 		cur.execute("SELECT pasteid FROM pastes WHERE pasteid = %s;", (route,))
 		if cur.fetchone():
 			return True
@@ -68,8 +67,8 @@ def db_newpaste(db, opt, stats):
 	date = datetime.utcnow()
 	date += timedelta(hours=float(opt['ttl']))
 	with db.cursor() as cur:
-		cur.execute("""INSERT INTO 
-			pastes (pasteid, token, lexer, expiration, burn, 
+		cur.execute("""INSERT INTO
+			pastes (pasteid, token, lexer, expiration, burn,
 			paste, size, lines, sloc)
 			VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s);""", \
 			(opt['pasteid'], opt['token'], opt['lexer'], \
@@ -128,25 +127,25 @@ def newpaste():
 			paste_opt['pasteid'] = ''
 			while url_collision(db, paste_opt['pasteid']):
 				for i in range(url_len):
-					paste_opt['pasteid'] += base_encode(getrandbits(6))	
+					paste_opt['pasteid'] += base_encode(getrandbits(6))
 				url_len += 1
-			
+
 			paste_opt['token'] = \
 				urlsafe_b64encode(getrandbits(48).to_bytes(config.token_len, 'little')).decode('utf-8')
-			
+
 			stats = paste_stats(paste_opt['paste']) #generate text stats
-			
+
 			db_newpaste(db, paste_opt, stats)
-			
+
 			pastecount(db) #increment total pastes
 
-			if request.path != '/newpaste': #plaintext reply 
+			if request.path != '/newpaste': #plaintext reply
 				if paste_opt['raw'] == 'true':
 					reptype = 'viewraw'
 				else:
 					reptype = 'viewpaste'
 				return "token: " + paste_opt['token'] + " | " + config.domain + url_for(reptype, pasteid = paste_opt['pasteid']) + "\n"
-			
+
 			flash(paste_opt['token'])
 		return redirect(paste_opt['pasteid'])
 	elif request.method == 'GET':
@@ -171,15 +170,15 @@ def viewpaste(pasteid):
 				abort(404)
 			elif result['burn'] > 0:
 				db_burn(db, pasteid)
-			
+
 			pasteview(db) #count towards total paste views
 
 			if request.args.get('raw') is not None:
 				return plain(result['paste'])
-			
+
 			if request.args.get('d') is not None:
 				direction = 'rtl'
-			
+
 			lexer = get_lexer_by_name(result['lexer'])
 			formatter = HtmlFormatter(nowrap=True, cssclass='paste')
 			paste = highlight(result['paste'], lexer, formatter)
@@ -211,7 +210,7 @@ def viewpaste(pasteid):
 				db_deletepaste(db, pasteid)
 				return config.msg_paste_deleted, 200
 			else:
-				return config.msg_err_401, 401	
+				return config.msg_err_401, 401
 	else:
 		abort(405)
 
@@ -228,9 +227,9 @@ def viewraw(pasteid):
 				return config.msg_err_404, 404
 			elif result['burn'] > 0:
 				db_burn(db, pasteid)
-	
+
 			pasteview(db) #count towards total paste views
-			
+
 			return plain(result['paste'])
 
 	elif request.method == 'DELETE':
@@ -256,11 +255,11 @@ def	deletepaste(pasteid, token):
 		if not result:
 			abort(404)
 		elif result['token'] == token:
-		    db_deletepaste(db, pasteid)
-		    return render_template('deleted.html')
+			db_deletepaste(db, pasteid)
+			return render_template('deleted.html')
 		else:
 			abort(401)
-			
+
 @app.route('/about/api')
 def aboutapi():
 	return render_template('api.html', year=year)
