@@ -9,7 +9,7 @@ defaults = {
 
 #paste options
 paste_limits = {
-	'ttl_max': 731, #maximum allowed paste ttl in hours, extra decimals 
+	'ttl_max': 731, #maximum allowed paste ttl in hours, extra decimals
 	'ttl_min': 0, #minimum allowed paste ttl in hours
 	'burn_max': 1000, #maximum allowed reads before burning paste [default: 1000]
 	'burn_min': 1, #minimum allowed reads before burning paste [default: 1]
@@ -33,7 +33,7 @@ base = len(url_alph)
 #return messages
 msg_empty_paste = "pls, actually paste something k?\n"
 msg_invalid_ttl = "ttl must be between " + str(paste_limits['ttl_min']) + " and " + str(paste_limits['ttl_max']) +" hours.\n"
-msg_invalid_burn = "burn count must be between " + str(paste_limits['burn_min']) + " and " + str(paste_limits['burn_max']) + ".\n" 
+msg_invalid_burn = "burn count must be between " + str(paste_limits['burn_min']) + " and " + str(paste_limits['burn_max']) + ".\n"
 msg_err_404 = "404 - Not Found.\n"
 msg_err_401 = "401 - Unauthorized - check your delete token.\n"
 msg_paste_deleted = "paste deleted successfully.\n"
