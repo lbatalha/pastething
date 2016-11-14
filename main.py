@@ -23,11 +23,7 @@ import config
 app = Flask(__name__)
 app.secret_key = config.secret_key
 app.config['MAX_CONTENT_LENGTH'] = config.max_content_length
-
-
-year = date.today().year
-
-
+app.jinja_env.globals['year'] = date.today().year
 
 def base_encode(num):
 	if not num:
@@ -152,7 +148,7 @@ def newpaste():
 		lexers_all = get_all_lexers()
 		return render_template('newpaste.html', \
 				lexers_all = lexers_all, lexers_common = config.lexers_common, \
-				ttl = config.ttl_options, paste_limits = config.paste_limits, year = year)
+				ttl = config.ttl_options, paste_limits = config.paste_limits)
 	else:
 		abort(405)
 
@@ -196,7 +192,7 @@ def viewpaste(pasteid):
 
 			del_url = url_for('deletepaste', pasteid=pasteid, token=token)
 			return render_template('viewpaste.html', \
-				stats=stats, paste=paste.split("\n"), direction=direction, delete=del_url, year=year)
+				stats=stats, paste=paste.split("\n"), direction=direction, delete=del_url)
 		abort(500)
 	elif request.method == 'DELETE':
 		with psycopg2.connect(config.dsn) as db:
@@ -262,17 +258,17 @@ def	deletepaste(pasteid, token):
 
 @app.route('/about/api')
 def aboutapi():
-	return render_template('api.html', year=year)
+	return render_template('api.html')
 
 @app.route('/about')
 def aboutpage():
-	return render_template('about.html', year=year)
+	return render_template('about.html')
 
 @app.route('/stats')
 def statspage():
 	with psycopg2.connect(config.dsn) as db:
 		stats = getstats(db)
-		return render_template('stats.html', year=year, stats = stats)
+		return render_template('stats.html', stats = stats)
 
 
 @app.errorhandler(404)
