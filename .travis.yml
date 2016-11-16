@@ -1,0 +1,17 @@
+language: python
+python:
+        - "3.2"
+        - "3.3"
+        - "3.4"
+        - "3.5"
+        - "3.6-dev"
+        - "nightly"
+addons:
+        postgresql: "9.5"
+install: 
+        - "pip install -r requirements.txt"
+
+before_script:
+        - psql -U postgres -f schema.sql
+
+script: true
