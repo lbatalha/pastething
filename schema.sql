@@ -22,8 +22,8 @@ CREATE TABLE stats (
 );
 CREATE TABLE dailystats (
 	date timestamp PRIMARY KEY NOT NULL,
-	pastecount int NOT NULL,
-	pasteviews int NOT NULL
+	pastecount int NOT NULL DEFAULT 0,
+	pasteviews int NOT NULL DEFAULT 0
 );
 
 INSERT INTO stats (metric, counter) VALUES ('totalpastes', 0);
