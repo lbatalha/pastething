@@ -18,6 +18,7 @@ from flask import Flask, \
 		get_flashed_messages
 
 from stats import pasteview, pastecount, getstats
+
 import config
 
 app = Flask(__name__)
@@ -31,6 +32,7 @@ def base_encode(num):
 	result = ''
 	while num:
 		num, rem = divmod(num, config.base)
+		print(rem)
 		result = result.join(config.url_alph[rem])
 	return result
 
@@ -123,7 +125,7 @@ def newpaste():
 			paste_opt['pasteid'] = ''
 			while url_collision(db, paste_opt['pasteid']):
 				for i in range(url_len):
-					paste_opt['pasteid'] += base_encode(getrandbits(6))
+					paste_opt['pasteid'] += base_encode(getrandbits(url_alph_bits))
 				url_len += 1
 
 			paste_opt['token'] = \
