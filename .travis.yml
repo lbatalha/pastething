@@ -25,6 +25,7 @@ before_script:
         - "sudo service postgresql start 9.5"
         - "ls -la /var/run/postgresql/"
         - psql -U postgres -f schema.sql
+        - "cp config.py.example config.py"
 
 script: 
         - "pytest tests.py"
