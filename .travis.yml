@@ -7,11 +7,19 @@ python:
         - "3.5"
         - "3.6-dev"
         - "nightly"
+
 addons:
-        postgresql: "9.5"
+        apt:
+                sources:
+                        - precise-pgdg-9.5
+                packages:
+                        - postgresql-9.5
+                        - postgresql-contrib-9.5
+                postgresql: "9.5"
+
 install: 
         - "pip install -r requirements.txt"
-
+        
 before_script:
         - psql -U postgres -f schema.sql
 
