@@ -26,4 +26,6 @@ before_script:
         - "ls -la /var/run/postgresql/"
         - psql -U postgres -f schema.sql
 
-script: true
+script: 
+        - "pytest tests.py"
+        - true
