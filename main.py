@@ -32,7 +32,6 @@ def base_encode(num):
 	result = ''
 	while num:
 		num, rem = divmod(num, config.base)
-		print(rem)
 		result = result.join(config.url_alph[rem])
 	return result
 
