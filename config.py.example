@@ -29,6 +29,7 @@ dsn = "host=localhost port=5432 dbname='pastebin' user='pastebin' password='1234
 url_len = 8 #minimum paste url length in characters
 url_alph = tuple("123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghkmnpqrstuvwxyz") #alphabet used to generate paste url
 base = len(url_alph)
+url_alph_bits = base.bit_length() #number of bits required to cover the number of characters in url_alph
 
 #return messages
 msg_empty_paste = "pls, actually paste something k?\n"
