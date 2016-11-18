@@ -5,7 +5,7 @@ Example: https://cpy.pt/
 ##Dependencies
 
 * postgresql-9.5 <
-* python3
+* python3 (3.3+)
 * python3-flask
 * python3-pygments
 * python3-psycopg2
