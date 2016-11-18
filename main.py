@@ -26,15 +26,6 @@ app.secret_key = config.secret_key
 app.config['MAX_CONTENT_LENGTH'] = config.max_content_length
 app.jinja_env.globals['year'] = date.today().year #local server date
 
-def base_encode(num):
-	if not num:
-		return config.url_alph[0]
-	result = ''
-	while num:
-		num, rem = divmod(num, config.base)
-		result = result.join(config.url_alph[rem])
-	return result
-
 def plain(text):
 	resp = Response(text)
 	resp.headers['Content-Type'] = 'text/plain; charset=utf-8'
@@ -124,11 +115,11 @@ def newpaste():
 			paste_opt['pasteid'] = ''
 			while url_collision(db, paste_opt['pasteid']):
 				for i in range(url_len):
-					paste_opt['pasteid'] += base_encode(getrandbits(url_alph_bits))
+					paste_opt['pasteid'] += choice(url_alph)
 				url_len += 1
-
+			
 			paste_opt['token'] = \
-				urlsafe_b64encode(getrandbits(48).to_bytes(config.token_len, 'little')).decode('utf-8')
+				urlsafe_b64encode(getrandbits(config.token_len.bit_length()).to_bytes(config.token_len, 'little')).decode('utf-8')
 
 			stats = paste_stats(paste_opt['paste']) #generate text stats
 
