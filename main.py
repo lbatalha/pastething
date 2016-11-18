@@ -24,7 +24,7 @@ import config
 app = Flask(__name__)
 app.secret_key = config.secret_key
 app.config['MAX_CONTENT_LENGTH'] = config.max_content_length
-app.jinja_env.globals['year'] = date.today().year
+app.jinja_env.globals['year'] = date.today().year #local server date
 
 def base_encode(num):
 	if not num:
