@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from random import getrandbits
+from random import getrandbits, choice
 from base64 import urlsafe_b64encode
 from datetime import date, datetime, timedelta
 
@@ -115,7 +115,7 @@ def newpaste():
 			paste_opt['pasteid'] = ''
 			while url_collision(db, paste_opt['pasteid']):
 				for i in range(url_len):
-					paste_opt['pasteid'] += choice(url_alph)
+					paste_opt['pasteid'] += choice(config.url_alph)
 				url_len += 1
 			
 			paste_opt['token'] = \
