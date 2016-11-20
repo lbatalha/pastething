@@ -5,7 +5,7 @@ body {
 }
 
 #maindiv {
-	max-width: 110ch;
+	max-width: 90%;
 	min-width: 30ch;
 	margin: auto;
 }
