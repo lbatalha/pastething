@@ -134,7 +134,7 @@ def newpaste():
 				else:
 					reptype = 'viewpaste'
 				return  config.domain + url_for(reptype, pasteid = paste_opt['pasteid']) + \
-						"|" + paste_opt['token'] + "\n"
+						" | " + paste_opt['token'] + "\n"
 
 			flash(paste_opt['token'])
 		return redirect(paste_opt['pasteid'])
