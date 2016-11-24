@@ -15,7 +15,7 @@ paste_limits = {
 	'burn_min': 1, #minimum allowed reads before burning paste [default: 1]
 }
 
-token_len =  6 #delete token length in bytes/characters
+token_len = 6 * 8 #delete token length in bytes/characters
 
 #flask configuration
 secret_key = 'CHANGEME' #CHANGE THIS IN PRODUCTION - set it to some random string

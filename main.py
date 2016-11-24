@@ -119,7 +119,8 @@ def newpaste():
 				url_len += 1
 			
 			paste_opt['token'] = \
-				urlsafe_b64encode(getrandbits(config.token_len.bit_length()).to_bytes(config.token_len, 'little')).decode('utf-8')
+				urlsafe_b64encode(getrandbits(config.token_len.bit_length()) \
+					.to_bytes(config.token_len, 'little')).decode('utf-8')
 
 			stats = paste_stats(paste_opt['paste']) #generate text stats
 
