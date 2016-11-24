@@ -119,9 +119,9 @@ def newpaste():
 				url_len += 1
 			
 			paste_opt['token'] = \
-				urlsafe_b64encode(getrandbits(config.token_len.bit_length()) \
+				urlsafe_b64encode((getrandbits(config.token_len * 8)) \
 					.to_bytes(config.token_len, 'little')).decode('utf-8')
-
+			
 			stats = paste_stats(paste_opt['paste']) #generate text stats
 
 			db_newpaste(db, paste_opt, stats)
@@ -133,7 +133,8 @@ def newpaste():
 					reptype = 'viewraw'
 				else:
 					reptype = 'viewpaste'
-				return "token: " + paste_opt['token'] + " | " + config.domain + url_for(reptype, pasteid = paste_opt['pasteid']) + "\n"
+				return  config.domain + url_for(reptype, pasteid = paste_opt['pasteid']) + \
+						"|" + paste_opt['token'] + "\n"
 
 			flash(paste_opt['token'])
 		return redirect(paste_opt['pasteid'])
