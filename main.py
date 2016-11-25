@@ -84,7 +84,7 @@ def newpaste():
 	if request.method == 'POST':
 		paste_opt = {}
 		for param in config.defaults: #init form parameters with defaults
-				paste_opt[param] = config.defaults[param]
+			paste_opt[param] = config.defaults[param]
 		for param in request.form:
 			if param in paste_opt:
 				paste_opt[param] = request.form[param]
@@ -114,14 +114,14 @@ def newpaste():
 			url_len = config.url_len
 			paste_opt['pasteid'] = ''
 			while url_collision(db, paste_opt['pasteid']):
-				for i in range(url_len):
+				for _ in range(url_len):
 					paste_opt['pasteid'] += choice(config.url_alph)
 				url_len += 1
-			
+
 			paste_opt['token'] = \
 				urlsafe_b64encode((getrandbits(config.token_len * 8)) \
 					.to_bytes(config.token_len, 'little')).decode('utf-8')
-			
+
 			stats = paste_stats(paste_opt['paste']) #generate text stats
 
 			db_newpaste(db, paste_opt, stats)
@@ -133,7 +133,7 @@ def newpaste():
 					reptype = 'viewraw'
 				else:
 					reptype = 'viewpaste'
-				return  config.domain + url_for(reptype, pasteid = paste_opt['pasteid']) + \
+				return config.domain + url_for(reptype, pasteid = paste_opt['pasteid']) + \
 						" | " + paste_opt['token'] + "\n"
 
 			flash(paste_opt['token'])
