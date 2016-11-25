@@ -46,7 +46,7 @@ def url_collision(db, route):
 		if rule.rule == '/' + route:
 			return True
 	with db.cursor() as cur:
-		cur.execute("SELECT pasteid FROM pastes WHERE pasteid = %s;", (route,))
+		cur.execute("SELECT pasteid FROM pastes WHERE pasteid=%s;", (route,))
 		if cur.fetchone():
 			return True
 	return False
@@ -64,7 +64,7 @@ def db_newpaste(db, opt, stats):
 			stats['size'], stats['lines'], stats['sloc']))
 
 def db_getpaste(db, pasteid):
-	with db.cursor(cursor_factory = DictCursor) as cur:
+	with db.cursor(cursor_factory=DictCursor) as cur:
 		cur.execute(("""SELECT * FROM pastes WHERE pasteid=%s;"""), (pasteid,))
 		r = cur.fetchone()
 	return r
@@ -76,7 +76,7 @@ def db_deletepaste(db, pasteid):
 
 def db_burn(db, pasteid):
 	with db.cursor() as cur:
-		cur.execute(("""UPDATE pastes SET burn = burn - 1 WHERE pasteid=%s;"""), (pasteid,))
+		cur.execute(("""UPDATE pastes SET burn=burn-1 WHERE pasteid=%s;"""), (pasteid,))
 
 @app.route('/', methods=['GET', 'POST'])
 @app.route('/newpaste', methods=['POST']) #only used via html form
@@ -133,7 +133,7 @@ def newpaste():
 					reptype = 'viewraw'
 				else:
 					reptype = 'viewpaste'
-				return config.domain + url_for(reptype, pasteid = paste_opt['pasteid']) + \
+				return config.domain + url_for(reptype, pasteid=paste_opt['pasteid']) + \
 						" | " + paste_opt['token'] + "\n"
 
 			flash(paste_opt['token'])
@@ -141,8 +141,8 @@ def newpaste():
 	elif request.method == 'GET':
 		lexers_all = sorted(get_all_lexers())
 		return render_template('newpaste.html', \
-				lexers_all = lexers_all, lexers_common = config.lexers_common, \
-				ttl = config.ttl_options, paste_limits = config.paste_limits)
+				lexers_all=lexers_all, lexers_common=config.lexers_common, \
+				ttl=config.ttl_options, paste_limits=config.paste_limits)
 	else:
 		abort(405)
 
@@ -262,7 +262,7 @@ def aboutpage():
 def statspage():
 	with psycopg2.connect(config.dsn) as db:
 		stats = getstats(db)
-		return render_template('stats.html', stats = stats)
+		return render_template('stats.html', stats=stats)
 
 
 @app.errorhandler(404)
