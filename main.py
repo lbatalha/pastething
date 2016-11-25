@@ -46,7 +46,7 @@ def url_collision(db, route):
 		if rule.rule == '/' + route:
 			return True
 	with db.cursor() as cur:
-		cur.execute("SELECT pasteid FROM pastes WHERE pasteid=%s;", (route,))
+		cur.execute("SELECT pasteid FROM pastes WHERE pasteid = %s;", (route,))
 		if cur.fetchone():
 			return True
 	return False
@@ -65,18 +65,18 @@ def db_newpaste(db, opt, stats):
 
 def db_getpaste(db, pasteid):
 	with db.cursor(cursor_factory=DictCursor) as cur:
-		cur.execute(("""SELECT * FROM pastes WHERE pasteid=%s;"""), (pasteid,))
+		cur.execute(("""SELECT * FROM pastes WHERE pasteid = %s;"""), (pasteid,))
 		r = cur.fetchone()
 	return r
 
 
 def db_deletepaste(db, pasteid):
 	with db.cursor() as cur:
-		cur.execute(("""DELETE FROM pastes WHERE pasteid=%s;"""), (pasteid,))
+		cur.execute(("""DELETE FROM pastes WHERE pasteid = %s;"""), (pasteid,))
 
 def db_burn(db, pasteid):
 	with db.cursor() as cur:
-		cur.execute(("""UPDATE pastes SET burn=burn-1 WHERE pasteid=%s;"""), (pasteid,))
+		cur.execute(("""UPDATE pastes SET burn = burn - 1 WHERE pasteid = %s;"""), (pasteid,))
 
 @app.route('/', methods=['GET', 'POST'])
 @app.route('/newpaste', methods=['POST']) #only used via html form
