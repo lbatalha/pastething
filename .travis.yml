@@ -23,6 +23,7 @@ addons:
 
 install: 
         - "pip install -r requirements.txt"
+        - "pip install pylint"
         
 before_script:
         - "sudo service postgresql start 9.5"
@@ -31,5 +32,6 @@ before_script:
         - "cp config.py.example config.py"
 
 script: 
+        - "pylint main.py gc.py stats.py"
         - "pytest tests.py"
         - true

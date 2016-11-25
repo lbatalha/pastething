@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import psycopg2
 from datetime import datetime
+
+import psycopg2
 from config import dsn
 
 with psycopg2.connect(dsn) as db:

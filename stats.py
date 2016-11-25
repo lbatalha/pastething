@@ -1,5 +1,5 @@
-from psycopg2.extras import DictCursor
 from datetime import datetime
+from psycopg2.extras import DictCursor
 
 def pastecount(db):
 	with db.cursor() as cur:
@@ -33,11 +33,3 @@ def getstats(db):
 		print()
 		return stats
 
-def growthgraph(db):
-	#TODO: fancy histogram with site usage
-	return True
-
-def expirationgraph(db):
-	csv = []
-	#TODO: fancy histogram with calculated paste expiration
-	return True
