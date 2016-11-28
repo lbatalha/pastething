@@ -31,7 +31,8 @@ before_script:
         - psql -U postgres -f schema.sql
         - "cp config.py.example config.py"
 
+
 script: 
         - "pylint main.py gc.py stats.py"
+        - "python3 main.py &"
         - "pytest tests.py"
-        - true
