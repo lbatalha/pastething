@@ -13,7 +13,16 @@ Example: https://cpy.pt/
 ##Installation
 
 * install dependencies
+	* ```shell
+		pip install -r requirements.txt
+		```
 * setup db with schema.sql
+	* ```shell
+		sudo -u postgres psql -f schema.db
+		```
 * copy config.py.example as config.py
+	* ```shell
+		cp config.py.example config.py
+		```
 * configure config.py - **make sure secret_key and domain are changed!**
-* use whatever wsgi server you want
+* use whatever wsgi server you want - (gunicorn!)
