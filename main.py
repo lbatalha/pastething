@@ -89,14 +89,14 @@ def newpaste():
 			if param in paste_opt:
 				paste_opt[param] = request.form[param]
 		if paste_opt['paste'] == '':
-			return config.msg_empty_paste
+			return config.msg_empty_paste, 400
 		try:
 			if not config.paste_limits['ttl_min'] < \
 						float(paste_opt['ttl']) < \
 						config.paste_limits['ttl_max']:
-				return config.msg_invalid_ttl
+				return config.msg_invalid_ttl, 400
 		except ValueError:
-			return config.msg_invalid_ttl
+			return config.msg_invalid_ttl, 400
 		try:
 			if paste_opt['lexer'] == 'auto':
 				paste_opt['lexer'] = guess_lexer(paste_opt['paste']).aliases[0]
@@ -106,9 +106,9 @@ def newpaste():
 			if paste_opt['burn'] == '' or paste_opt['burn'] == 0 or paste_opt['burn'] == config.defaults['burn']:
 				paste_opt['burn'] = config.defaults['burn']
 			elif not config.paste_limits['burn_min'] <= int(paste_opt['burn']) <= config.paste_limits['burn_max']:
-				return config.msg_invalid_burn
+				return config.msg_invalid_burn, 400
 		except ValueError:
-			return config.msg_invalid_burn
+			return config.msg_invalid_burn, 400
 
 		with psycopg2.connect(config.dsn) as db:
 			url_len = config.url_len
