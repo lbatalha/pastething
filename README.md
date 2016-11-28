@@ -14,5 +14,6 @@ Example: https://cpy.pt/
 
 * install dependencies
 * setup db with schema.sql
-* copy config.py.example as config.py and configure it
+* copy config.py.example as config.py
+* configure config.py - **make sure secret_key and domain are changed!**
 * use whatever wsgi server you want
