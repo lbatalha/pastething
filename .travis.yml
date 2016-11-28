@@ -23,7 +23,7 @@ addons:
 
 install: 
         - "pip install -r requirements.txt"
-        - "pip install pylint"
+        - "pip install pylint requests"
         
 before_script:
         - "sudo service postgresql start 9.5"
