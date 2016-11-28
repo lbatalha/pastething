@@ -87,6 +87,8 @@ def test_pastettl():
 	sleep(seconds)
 	r = requests.get(response[0])
 	assert r.status_code == 404
-
-def test_garbagecollect():
-	assert subprocess.run(['python3', 'gc.py']).returncode == 0
+#
+# For python 3.5 only
+#
+#def test_garbagecollect():
+#	assert subprocess.run(['python3', 'gc.py']).returncode == 0
