@@ -13,15 +13,15 @@ Example: https://cpy.pt/
 ##Installation
 
 * install dependencies
-	* ```shell
+	* ```bash
 		pip install -r requirements.txt
 		```
 * setup db with schema.sql
-	* ```shell
+	* ```bash
 		sudo -u postgres psql -f schema.db
 		```
 * copy config.py.example as config.py
-	* ```shell
+	* ```bash
 		cp config.py.example config.py
 		```
 * configure config.py - **make sure secret_key and domain are changed!**
