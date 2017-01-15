@@ -1,3 +1,4 @@
+[![Build Status](https://travis-ci.org/lbatalha/pastething.svg?branch=master)](https://travis-ci.org/lbatalha/pastething)
 #A python3-flask pastebin
 
 Example: https://cpy.pt/
