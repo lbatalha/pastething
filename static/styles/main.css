@@ -128,7 +128,10 @@ a:hover{ color: #e6db74}
 	color: #75715e;
 	outline-color: #55515e;
 }
-
+::selection {
+	color: #49483e;
+	background: #f8f8f2;
+}
 #controls {
 	color: #888481;
 	border: 3px solid;
