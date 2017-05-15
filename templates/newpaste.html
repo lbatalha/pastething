@@ -11,7 +11,7 @@
 
 		<div id='controls'>
 
-			<select id='lexerselect' name='lexer' class='dropdown'>
+			<select id='lexerselect' name='lexer' class='dropdown control-item'>
 				<option value='auto' selected>Autodetect</option>
 				<option class='marker' disabled>Common Lexers</option>
 				{% for lexer in lexers_common %}
@@ -22,14 +22,14 @@
 					<option class='lexer-entry' value='{{ lexer[1][0] }}'>{{ lexer[0] }}</option>
 				{% endfor %}
 			</select>
-			<select id='ttlselect' name='ttl' class='dropdown'>
+			<select id='ttlselect' name='ttl' class='dropdown control-item'>
 				<option value='1' selected>1 hour</option>
 				{% for entry in ttl%}
 					<option value='{{ entry[1] }}'>{{ entry[0] }}</option>
 				{% endfor %}
 			</select>
-			<input id='burninput' type='number' name='burn' min='0' max='{{ paste_limits['burn_max'] }}' placeholder='Burn' >
-			<input id='pastebutton' type='submit' value='Paste'>
+			<input id='burninput' type='number' name='burn' min='0' max='{{ paste_limits['burn_max'] }}' placeholder='Burn' class='control-time'>
+			<input id='pastebutton' class='control-item' type='submit' value='Paste'>
 
 		</div>
 	</form>

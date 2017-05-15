@@ -137,37 +137,28 @@ a:hover{ color: #e6db74}
 	color: #888481;
 	border: 3px solid;
 	border-color: #272822;
-	padding: 0.5em;
+	padding: 0.15em 0.5em 0.15em 0.5em;
 	outline-color: #888481;
 
 }
-#lexerselect {
-	color: inherit;
-	background-color: #272822;
-	border-color: #272822;
-	outline-color: inherit;
+.control-item {
+	margin: 0.25em 0em 0.25em 0em;
+        color: inherit;
+        background-color: #272822;
+        border-color: #272822;
+        outline-color: inherit;
 }
-#ttlselect {
-	color: inherit;
-	background-color: #272822;
-	border-color: #272822;
-	outline-color: inherit;
-}
+
 
 #burninput {
 	width: 6ch;
 	border: 0;
-	color: inherit;
 	background-color: #272822;
-	border-color: #272822;
 	text-align: right;
-	outline-color: inherit;
-
 }
 
 #pastebutton {
 	color: inherit;
-	background-color: #272822;
 	border: 0;
 	width: 8em;
 	height: 1.5em;
