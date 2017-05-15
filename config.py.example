@@ -55,6 +55,7 @@ ttl_options = [
 ]
 
 lexers_common = [
+	('Text Only', 'text'),
 	('Bash', 'bash'),
 	('C', 'c'),
 	('C++', 'cpp'),
