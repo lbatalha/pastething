@@ -1,9 +1,9 @@
 [![Build Status](https://travis-ci.org/lbatalha/pastething.svg?branch=master)](https://travis-ci.org/lbatalha/pastething)
-#A python3-flask pastebin
+# A python3-flask pastebin
 
 Example: https://cpy.pt/
 
-##Dependencies
+## Dependencies
 
 * postgresql-9.5 <
 * python3 (3.3+)
@@ -11,7 +11,7 @@ Example: https://cpy.pt/
 * python3-pygments
 * python3-psycopg2
 
-##Installation
+## Installation
 
 * install dependencies
 	* ```
