@@ -110,6 +110,7 @@ a:hover{ color: #e6db74}
 	tab-size: 4;
 	padding: 0;
 	margin: 0;
+	color: #B5AFA3;
 
 }
 
@@ -125,7 +126,7 @@ a:hover{ color: #e6db74}
 	padding: 0.5em;
 	border: 0;
 	background-color: #272822;
-	color: #75715e;
+	color: #B5AFA3;
 	outline-color: #55515e;
 }
 ::selection {
