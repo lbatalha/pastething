@@ -6,27 +6,25 @@ branches:
                 - tests
 language: python
 python:
-        - "3.3"
         - "3.4"
         - "3.5"
         - "3.6"
-        #- "nightly"
 
 addons:
         apt:
                 sources:
-                        - precise-pgdg-9.5
+                        - precise-pgdg-9.6
                 packages:
-                        - postgresql-9.5
-                        - postgresql-contrib-9.5
-                postgresql: "9.5"
+                        - postgresql-9.6
+                        - postgresql-contrib-9.6
+                postgresql: "9.6"
 
 install: 
         - "pip install -r requirements.txt"
         - "pip install pylint requests"
         
 before_script:
-        - "sudo service postgresql start 9.5"
+        - "sudo service postgresql start 9.6"
         - "ls -la /var/run/postgresql/"
         - psql -U postgres -f schema.sql
         - "cp config.py.example config.py"
