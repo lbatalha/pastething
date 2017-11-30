@@ -66,6 +66,7 @@ lexers_common = [
 	('JavaScript', 'javascript'),
 	('JSON', 'json'),
 	('Perl', 'perl'),
+	('Java', 'java'),
 	('PHP', 'php'),
 	('Python', 'python'),
 	('Ruby', 'ruby'),
