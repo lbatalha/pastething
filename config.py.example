@@ -63,6 +63,7 @@ lexers_common = [
 	('CSS', 'css'),
 	('Go', 'go'),
 	('HTML', 'html'),
+	('Java', 'java'),
 	('JavaScript', 'javascript'),
 	('JSON', 'json'),
 	('Perl', 'perl'),
@@ -70,6 +71,5 @@ lexers_common = [
 	('Python', 'python'),
 	('Ruby', 'ruby'),
 	('SQL', 'sql'),
-	('Java', 'java'),
 	('XML', 'xml'),
 ]
