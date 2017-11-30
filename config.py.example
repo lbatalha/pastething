@@ -70,6 +70,6 @@ lexers_common = [
 	('Python', 'python'),
 	('Ruby', 'ruby'),
 	('SQL', 'sql'),
-	('Text only', 'text'),
+	('Java', 'java'),
 	('XML', 'xml'),
 ]
