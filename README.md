@@ -74,6 +74,10 @@ server {
 								root /home/pastebin/pastething/;
 								add_header Cache-Control "public, max-age=864000";
 				}
+        
+				location =/robots.txt {
+                root /home/pastebin/pastething/;
+        }
 }
 
 ```
