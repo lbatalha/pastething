@@ -56,7 +56,7 @@ server {
 				resolver_timeout 5s;
 
 				add_header X-Frame-Options "DENY";
-				add_header Strict-Transport-Security "max-age=31104000; includeSubdomains; preload";
+				add_header Strict-Transport-Security "max-age=31536000; includeSubdomains; preload";
 				add_header X-Content-Type-Options nosniff;
 				add_header X-Xss-Protection "1; mode=block";
 				add_header Content-Security-Policy "default-src none; style-src 'self'; script-src 'self'";
