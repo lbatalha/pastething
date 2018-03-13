@@ -3,9 +3,13 @@
 from random import getrandbits, choice
 from base64 import urlsafe_b64encode
 from datetime import date, datetime, timedelta
+from contextlib import contextmanager
 
 import psycopg2
 from psycopg2.extras import DictCursor
+from psycopg2.pool import SimpleConnectionPool
+
+from psycogreen.gevent import patch_psycopg
 
 import pygments
 from pygments import highlight
@@ -26,6 +30,25 @@ app.secret_key = config.secret_key
 app.config['MAX_CONTENT_LENGTH'] = config.max_content_length
 app.jinja_env.globals['year'] = date.today().year #local server date
 
+#def post_fork(server, worker):
+patch_psycopg()
+
+#Setup connection pool
+connpool = SimpleConnectionPool(1,10,config.dsn)
+
+@contextmanager
+def getcursor(cursor_factory=None):
+	con = connpool.getconn()
+	try:
+		if cursor_factory:
+			yield con.cursor(cursor_factory=cursor_factory)
+			con.commit()
+		else:
+			yield con.cursor()
+			con.commit()
+	finally:
+		connpool.putconn(con)
+
 def plain(text):
 	resp = Response(text)
 	resp.headers['Content-Type'] = 'text/plain; charset=utf-8'
@@ -41,20 +64,20 @@ def paste_stats(text):
 	stats['size'] = len(text.encode('utf-8'))
 	return stats
 
-def url_collision(db, route):
+def url_collision(cursor, route):
 	for rule in app.url_map.iter_rules():
 		if rule.rule == '/' + route:
 			return True
-	with db.cursor() as cur:
+	with cursor as cur:
 		cur.execute("SELECT pasteid FROM pastes WHERE pasteid = %s;", (route,))
 		if cur.fetchone():
 			return True
 	return False
 
-def db_newpaste(db, opt, stats):
+def db_newpaste(cursor, opt, stats):
 	date = datetime.utcnow()
 	date += timedelta(hours=float(opt['ttl']))
-	with db.cursor() as cur:
+	with cursor as cur:
 		cur.execute("""INSERT INTO
 			pastes (pasteid, token, lexer, expiration, burn,
 			paste, size, lines, sloc)
@@ -63,19 +86,19 @@ def db_newpaste(db, opt, stats):
 			date, opt['burn'], opt['paste'], \
 			stats['size'], stats['lines'], stats['sloc']))
 
-def db_getpaste(db, pasteid):
-	with db.cursor(cursor_factory=DictCursor) as cur:
+def db_getpaste(cursor, pasteid):
+	with cursor as cur:
 		cur.execute(("""SELECT * FROM pastes WHERE pasteid = %s;"""), (pasteid,))
 		r = cur.fetchone()
 	return r
 
 
-def db_deletepaste(db, pasteid):
-	with db.cursor() as cur:
+def db_deletepaste(cursor, pasteid):
+	with cursor as cur:
 		cur.execute(("""DELETE FROM pastes WHERE pasteid = %s;"""), (pasteid,))
 
-def db_burn(db, pasteid):
-	with db.cursor() as cur:
+def db_burn(cursor, pasteid):
+	with cursor as cur:
 		cur.execute(("""UPDATE pastes SET burn = burn - 1 WHERE pasteid = %s;"""), (pasteid,))
 
 @app.route('/', methods=['GET', 'POST'])
@@ -110,33 +133,32 @@ def newpaste():
 		except ValueError:
 			return config.msg_invalid_burn, 400
 
-		with psycopg2.connect(config.dsn) as db:
-			url_len = config.url_len
-			paste_opt['pasteid'] = ''
-			while url_collision(db, paste_opt['pasteid']):
-				for _ in range(url_len):
-					paste_opt['pasteid'] += choice(config.url_alph)
-				url_len += 1
+		url_len = config.url_len
+		paste_opt['pasteid'] = ''
+		while url_collision(getcursor(), paste_opt['pasteid']):
+			for _ in range(url_len):
+				paste_opt['pasteid'] += choice(config.url_alph)
+			url_len += 1
 
-			paste_opt['token'] = \
-				urlsafe_b64encode((getrandbits(config.token_len * 8)) \
-					.to_bytes(config.token_len, 'little')).decode('utf-8')
+		paste_opt['token'] = \
+			urlsafe_b64encode((getrandbits(config.token_len * 8)) \
+				.to_bytes(config.token_len, 'little')).decode('utf-8')
 
-			stats = paste_stats(paste_opt['paste']) #generate text stats
+		stats = paste_stats(paste_opt['paste']) #generate text stats
 
-			db_newpaste(db, paste_opt, stats)
+		db_newpaste(getcursor(), paste_opt, stats)
 
-			pastecount(db) #increment total pastes
+		pastecount(getcursor()) #increment total pastes
 
-			if request.path != '/newpaste': #plaintext reply
-				if paste_opt['raw'] == 'true':
-					reptype = 'viewraw'
-				else:
-					reptype = 'viewpaste'
-				return config.domain + url_for(reptype, pasteid=paste_opt['pasteid']) + \
-						" | " + paste_opt['token'] + "\n"
+		if request.path != '/newpaste': #plaintext reply
+			if paste_opt['raw'] == 'true':
+				reptype = 'viewraw'
+			else:
+				reptype = 'viewpaste'
+			return config.domain + url_for(reptype, pasteid=paste_opt['pasteid']) + \
+					" | " + paste_opt['token'] + "\n"
 
-			flash(paste_opt['token'])
+		flash(paste_opt['token'])
 		return redirect(paste_opt['pasteid'])
 	elif request.method == 'GET':
 		lexers_all = sorted(get_all_lexers())
@@ -151,56 +173,54 @@ def newpaste():
 def viewpaste(pasteid):
 	if request.method == 'GET':
 		direction = 'ltr'
-		with psycopg2.connect(config.dsn) as db:
-			result = db_getpaste(db, pasteid)
-			if not result:
-				abort(404)
-			if result['burn'] == 0 or result['expiration'] < datetime.utcnow():
-				db_deletepaste(db, pasteid)
-				abort(404)
-			elif result['burn'] > 0:
-				db_burn(db, pasteid)
+		result = db_getpaste(getcursor(cursor_factory=DictCursor), pasteid)
+		if not result:
+			abort(404)
+		if result['burn'] == 0 or result['expiration'] < datetime.utcnow():
+			db_deletepaste(getcursor(), pasteid)
+			abort(404)
+		elif result['burn'] > 0:
+			db_burn(getcursor(), pasteid)
 
-			pasteview(db) #count towards total paste views
+		pasteview(getcursor()) #count towards total paste views
 
-			if request.args.get('raw') is not None:
-				return plain(result['paste'])
+		if request.args.get('raw') is not None:
+			return plain(result['paste'])
 
-			if request.args.get('d') is not None:
-				direction = 'rtl'
+		if request.args.get('d') is not None:
+			direction = 'rtl'
 
-			lexer = get_lexer_by_name(result['lexer'])
-			formatter = HtmlFormatter(nowrap=True, cssclass='paste')
-			paste = highlight(result['paste'], lexer, formatter)
+		lexer = get_lexer_by_name(result['lexer'])
+		formatter = HtmlFormatter(nowrap=True, cssclass='paste')
+		paste = highlight(result['paste'], lexer, formatter)
 
-			stats = {'lines': result['lines'],
-					'sloc': result['sloc'],
-					'size': result['size'],
-					'lexer': lexer.name
-			}
-			messages = get_flashed_messages()
-			if messages:
-				token = messages[0]
-			else:
-				token = ''
+		stats = {'lines': result['lines'],
+				'sloc': result['sloc'],
+				'size': result['size'],
+				'lexer': lexer.name
+		}
+		messages = get_flashed_messages()
+		if messages:
+			token = messages[0]
+		else:
+			token = ''
 
-			del_url = url_for('deletepaste', pasteid=pasteid, token=token)
-			return render_template('viewpaste.html', \
-				stats=stats, paste=paste.split("\n"), direction=direction, delete=del_url)
+		del_url = url_for('deletepaste', pasteid=pasteid, token=token)
+		return render_template('viewpaste.html', \
+			stats=stats, paste=paste.split("\n"), direction=direction, delete=del_url)
 		abort(500)
 	elif request.method == 'DELETE':
-		with psycopg2.connect(config.dsn) as db:
-			result = db_getpaste(db, pasteid)
-			if not result:
-				return config.msg_err_404, 404
-			elif 'token' in request.form and result['token'] == request.form['token']:
-				db_deletepaste(db, pasteid)
-				return config.msg_paste_deleted, 200
-			elif 'token' in request.headers and result['token'] == request.headers.get('token'):
-				db_deletepaste(db, pasteid)
-				return config.msg_paste_deleted, 200
-			else:
-				return config.msg_err_401, 401
+		result = db_getpaste(getcursor(cursor_factory=DictCursor), pasteid)
+		if not result:
+			return config.msg_err_404, 404
+		elif 'token' in request.form and result['token'] == request.form['token']:
+			db_deletepaste(getcursor(), pasteid)
+			return config.msg_paste_deleted, 200
+		elif 'token' in request.headers and result['token'] == request.headers.get('token'):
+			db_deletepaste(getcursor(), pasteid)
+			return config.msg_paste_deleted, 200
+		else:
+			return config.msg_err_401, 401
 	else:
 		abort(405)
 
@@ -208,47 +228,44 @@ def viewpaste(pasteid):
 @app.route('/raw/<pasteid>', methods=['GET', 'DELETE'])
 def viewraw(pasteid):
 	if request.method == 'GET':
-		with psycopg2.connect(config.dsn) as db:
-			result = db_getpaste(db, pasteid)
-			if not result:
-				return config.msg_err_404, 404
-			if result['burn'] == 0 or result['expiration'] < datetime.utcnow():
-				db_deletepaste(db, pasteid)
-				return config.msg_err_404, 404
-			elif result['burn'] > 0:
-				db_burn(db, pasteid)
+		result = db_getpaste(getcursor(cursor_factory=DictCursor), pasteid)
+		if not result:
+			return config.msg_err_404, 404
+		if result['burn'] == 0 or result['expiration'] < datetime.utcnow():
+			db_deletepaste(getcursor(), pasteid)
+			return config.msg_err_404, 404
+		elif result['burn'] > 0:
+			db_burn(getcursor(), pasteid)
 
-			pasteview(db) #count towards total paste views
+		pasteview(getcursor()) #count towards total paste views
 
-			return plain(result['paste'])
+		return plain(result['paste'])
 
 	elif request.method == 'DELETE':
-		with psycopg2.connect(config.dsn) as db:
-			result = db_getpaste(db, pasteid)
-			if not result:
-				return config.msg_err_404, 404
-			elif 'token' in request.form and result['token'] == request.form['token']:
-				db_deletepaste(db, pasteid)
-				return config.msg_paste_deleted, 200
-			elif 'token' in request.headers and result['token'] == request.headers.get('token'):
-				db_deletepaste(db, pasteid)
-				return config.msg_paste_deleted, 200
-			else:
-				return config.msg_err_401, 401
+		result = db_getpaste(getcursor(cursor_factory=DictCursor), pasteid)
+		if not result:
+			return config.msg_err_404, 404
+		elif 'token' in request.form and result['token'] == request.form['token']:
+			db_deletepaste(getcursor(), pasteid)
+			return config.msg_paste_deleted, 200
+		elif 'token' in request.headers and result['token'] == request.headers.get('token'):
+			db_deletepaste(getcursor(), pasteid)
+			return config.msg_paste_deleted, 200
+		else:
+			return config.msg_err_401, 401
 	else:
 		return "invalid http method\n"
 
 @app.route('/<pasteid>/<token>', methods=['GET'])
 def	deletepaste(pasteid, token):
-	with psycopg2.connect(config.dsn) as db:
-		result = db_getpaste(db, pasteid)
-		if not result:
-			abort(404)
-		elif result['token'] == token:
-			db_deletepaste(db, pasteid)
-			return render_template('deleted.html')
-		else:
-			abort(401)
+	result = db_getpaste(getcursor(cursor_factory=DictCursor), pasteid)
+	if not result:
+		abort(404)
+	elif result['token'] == token:
+		db_deletepaste(getcursor(), pasteid)
+		return render_template('deleted.html')
+	else:
+		abort(401)
 
 @app.route('/about/api')
 def aboutapi():
@@ -260,9 +277,8 @@ def aboutpage():
 
 @app.route('/stats')
 def statspage():
-	with psycopg2.connect(config.dsn) as db:
-		stats = getstats(db)
-		return render_template('stats.html', stats=stats)
+	stats = getstats(getcursor(cursor_factory=DictCursor))
+	return render_template('stats.html', stats=stats)
 
 
 @app.errorhandler(404)
