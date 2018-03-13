@@ -1,18 +1,17 @@
 from datetime import datetime
-from psycopg2.extras import DictCursor
 
-def pastecount(db):
-	with db.cursor() as cur:
+def pastecount(cursor):
+	with cursor as cur:
 		cur.execute("UPDATE stats SET counter = counter + 1 WHERE metric = 'totalpastes';")
-	dailystats(db, 'pastecount', datetime.utcnow().date())
+	dailystats(cursor, 'pastecount', datetime.utcnow().date())
 
-def pasteview(db):
-	with db.cursor() as cur:
+def pasteview(cursor):
+	with cursor as cur:
 		cur.execute("UPDATE stats SET counter = counter + 1 WHERE metric = 'totalviews';")
-	dailystats(db, 'pasteviews', datetime.utcnow().date())
+	dailystats(cursor, 'pasteviews', datetime.utcnow().date())
 
-def dailystats(db, metric, today):
-	with db.cursor() as cur:
+def dailystats(cursor, metric, today):
+	with cursor as cur:
 		cur.execute("""INSERT INTO dailystats (date, {}) \
 				VALUES (%s, %s) \
 				ON CONFLICT (date) \
@@ -20,9 +19,9 @@ def dailystats(db, metric, today):
 				WHERE dailystats.date = %s;""".format(metric, metric, metric), \
 				(today, 1, today))
 
-def getstats(db):
+def getstats(cursor):
 	stats = {}
-	with db.cursor(cursor_factory=DictCursor) as cur:
+	with cursor as cur:
 		cur.execute("SELECT * FROM dailystats WHERE date = %s;", (datetime.utcnow().date(),))
 		stats['daily'] = cur.fetchone()
 		cur.execute("SELECT * FROM stats;")
@@ -32,4 +31,3 @@ def getstats(db):
 		stats['total'] = totalstats
 		print()
 		return stats
-
