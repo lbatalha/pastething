@@ -25,6 +25,10 @@ domain = 'http://127.0.0.1:5000' #set correctly, used for raw POST response
 #postgresql configuration
 dsn = "host=localhost port=5432 dbname='pastebin' user='pastebin' password='1234'"
 
+#psycopg connection pool limits
+connpool_min = 4
+connpool_max = 4
+
 #paste url
 url_len = 8 #minimum paste url length in characters
 url_alph = tuple("123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghkmnpqrstuvwxyz") #alphabet used to generate paste url
