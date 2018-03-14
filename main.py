@@ -5,7 +5,6 @@ from base64 import urlsafe_b64encode
 from datetime import date, datetime, timedelta
 from contextlib import contextmanager
 
-import psycopg2
 from psycopg2.extras import DictCursor
 from psycopg2.pool import SimpleConnectionPool
 
@@ -34,7 +33,7 @@ app.jinja_env.globals['year'] = date.today().year #local server date
 patch_psycopg()
 
 #Setup connection pool
-connpool = SimpleConnectionPool(1,10,config.dsn)
+connpool = SimpleConnectionPool(1, 10, config.dsn)
 
 @contextmanager
 def getcursor(cursor_factory=None):
