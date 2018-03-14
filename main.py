@@ -8,8 +8,6 @@ from contextlib import contextmanager
 from psycopg2.extras import DictCursor
 from psycopg2.pool import SimpleConnectionPool
 
-from psycogreen.gevent import patch_psycopg
-
 import pygments
 from pygments import highlight
 from pygments.lexers import get_lexer_by_name, guess_lexer, get_all_lexers
@@ -28,9 +26,6 @@ app = Flask(__name__)
 app.secret_key = config.secret_key
 app.config['MAX_CONTENT_LENGTH'] = config.max_content_length
 app.jinja_env.globals['year'] = date.today().year #local server date
-
-#def post_fork(server, worker):
-patch_psycopg()
 
 #Setup connection pool
 connpool = SimpleConnectionPool(1, 10, config.dsn)
@@ -207,7 +202,7 @@ def viewpaste(pasteid):
 		del_url = url_for('deletepaste', pasteid=pasteid, token=token)
 		return render_template('viewpaste.html', \
 			stats=stats, paste=paste.split("\n"), direction=direction, delete=del_url)
-		abort(500)
+
 	elif request.method == 'DELETE':
 		result = db_getpaste(getcursor(cursor_factory=DictCursor), pasteid)
 		if not result:
