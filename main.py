@@ -28,7 +28,7 @@ app.config['MAX_CONTENT_LENGTH'] = config.max_content_length
 app.jinja_env.globals['year'] = date.today().year #local server date
 
 #Setup connection pool
-connpool = SimpleConnectionPool(1, 10, config.dsn)
+connpool = SimpleConnectionPool(config.connpool_min, config.connpool_max, config.dsn)
 
 @contextmanager
 def getcursor(cursor_factory=None):
