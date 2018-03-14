@@ -29,7 +29,7 @@ Example: https://cpy.pt/
 * use whatever wsgi server you want - (gunicorn!)
 
 
-## Example nginx config used for cpy.pt
+## nginx config used for cpy.pt
 
 ```
 server {
@@ -83,3 +83,45 @@ server {
 
 }
 ```
+
+## Service configuration used in cpy.pt
+
+In production, cpy.pt uses gunicorn with gevent workers, to use gevent with psycopg2 without blocking issues you must monkeypatch the app (see below)
+
+### Example systemd service file template:
+```
+[Unit]
+Description=cpy.pt gunicorn daemon
+After=network.target
+
+[Service]
+User=pastebin
+Group=pastebin
+WorkingDirectory=/home/pastebin/pastething
+PIDFile=/var/run/pastebin/cpy.pt.pid
+ExecStart=/usr/local/bin/gunicorn --config /home/pastebin/pastething/gunicorn.conf.py --pid /var/run/pastebin/cpy.pt.pid -w {{2 * ansible_processor_count + 1}} -k gevent -b unix:/var/run/pastebin/cpy.pt.sock main:app
+ExecReload=/bin/kill -1 $MAINPID
+ExecStop=/bin/kill -15 $MAINPID
+PrivateTmp=false
+
+[Install]
+WantedBy=multi-user.target
+```
+
+### Example gunicorn config file
+
+Only the post-fork hook is defined in the cpy.pt config file, the service specific configs are defined in the systemd service file above
+This will monkeypatch psycopg every time a new worker is forked.
+```
+from psycogreen.gevent import patch_psycopg
+
+def post_fork(server, worker):
+	patch_psycopg()
+```
+
+To validate that you dont have blocking issues simply add a long timer to a db endpoint and simultaniously query that endpoint and one that does not have any blocking calls.
+The easiest way is to add `cur.execute("SELECT pg_sleep(1);")` just before the return statement of the `getstats` function, then simply setup some load testing application to hit the `/about` and `/stats` endpoint.
+The desired behaviour is the `/about` endpoint having normal response times (few mileseconds) and the `/stats` endpoint having >1s response times.
+If the `/about` endpoint does not have consistent response times then you are blocking.
+
+You can also use the `eventlet` worker type with gunicorn as this should automatically patch psycopg2 and the difference will be obvious.
