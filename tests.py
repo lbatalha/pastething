@@ -1,11 +1,11 @@
+from time import sleep
+
+import requests, subprocess
+
 import main
 import config
 import stats
 import gc
-
-import requests, subprocess
-from random import getrandbits
-from time import sleep
 
 url = "http://localhost:5000/"
 
@@ -76,7 +76,7 @@ def test_pasteburn():
 
 def test_pastettl():
 	"""test for paste auto-delete on expiration"""
-	ttl = 0.001 
+	ttl = 0.001
 	seconds = 60*60*0.001
 	params = {'paste': 'test', 'ttl': ttl}
 	r = requests.post(url, data=params)

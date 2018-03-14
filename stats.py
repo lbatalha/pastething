@@ -3,16 +3,16 @@ from datetime import datetime
 def pastecount(cursor):
 	with cursor as cur:
 		cur.execute("UPDATE stats SET counter = counter + 1 WHERE metric = 'totalpastes';")
-	dailystats(cursor, 'pastecount', datetime.utcnow().date())
+		dailystats(cur, 'pastecount', datetime.utcnow().date())
 
 def pasteview(cursor):
 	with cursor as cur:
 		cur.execute("UPDATE stats SET counter = counter + 1 WHERE metric = 'totalviews';")
-	dailystats(cursor, 'pasteviews', datetime.utcnow().date())
+		dailystats(cur, 'pasteviews', datetime.utcnow().date())
 
 def dailystats(cursor, metric, today):
-	with cursor as cur:
-		cur.execute("""INSERT INTO dailystats (date, {}) \
+	'''this is only ever called by other stats functions'''
+	cursor.execute("""INSERT INTO dailystats (date, {}) \
 				VALUES (%s, %s) \
 				ON CONFLICT (date) \
 				DO UPDATE SET {} = dailystats.{} + 1 \
@@ -29,5 +29,4 @@ def getstats(cursor):
 		for i in cur.fetchall():
 			totalstats[i[0]] = i[1]
 		stats['total'] = totalstats
-		print()
 		return stats
