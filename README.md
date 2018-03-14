@@ -125,3 +125,13 @@ The desired behaviour is the `/about` endpoint having normal response times (few
 If the `/about` endpoint does not have consistent response times then you are blocking.
 
 You can also use the `eventlet` worker type with gunicorn as this should automatically patch psycopg2 and the difference will be obvious.
+
+
+### gc.py
+
+This file is just a simple script used to delete all expire pastes.
+Although all expired pastes are deleted when they are requested, that still leaves the possibility of stale pastes. This makes sure we dont leave garbage behind.
+This is preferable to running the garbage collection query on every request to reduce overhead.
+
+The easiest way to set this up is using cron.
+cpy.pt uses a 5 minute timer.
