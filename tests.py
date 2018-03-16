@@ -1,6 +1,6 @@
 from time import sleep
 
-import requests, subprocess
+import requests, subprocess, sys
 
 import main
 import config
@@ -20,8 +20,6 @@ def test_plainresponse():
 	response = r.text.split(" | ")
 	r = requests.get(response[0])
 	assert r.headers['content-type'] == 'text/html; charset=utf-8'
-
-
 
 def test_pastedelete():
 	params = {'paste': 'test', 'burn': 1, 'ttl': 1.0}
@@ -87,8 +85,8 @@ def test_pastettl():
 	sleep(seconds)
 	r = requests.get(response[0])
 	assert r.status_code == 404
-#
-# For python 3.5 only
-#
-#def test_garbagecollect():
-#	assert subprocess.run(['python3', 'gc.py']).returncode == 0
+
+# For python 3.5+ only
+if sys.version_info.major == 3 and sys.version_info.minor >= 5:
+	def test_garbagecollect():
+		assert subprocess.run(['python3', 'gc.py']).returncode == 0
