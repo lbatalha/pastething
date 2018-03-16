@@ -1,4 +1,4 @@
-document.addEventListener("DOMContentLoaded", function(event) { 
+document.addEventListener("DOMContentLoaded", function(event) {
 	"use strict";
 	document.getElementById("wrap").addEventListener("click", wrap);
 	document.getElementById("dir").addEventListener("click", dir);
@@ -23,7 +23,7 @@ function dir(evt) {
 		dir.setAttribute("dir", "rtl");
 	}else{
 		dir.setAttribute("dir", "ltr");
-	}		
+	}
 
 }
 function indent(evt) {
@@ -38,7 +38,7 @@ function indent(evt) {
 		}else{
 			lines[i].style.tabSize = "2";
 		}
-		
+
 	}
-	
+
 }
