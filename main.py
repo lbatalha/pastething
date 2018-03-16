@@ -36,10 +36,9 @@ def getcursor(cursor_factory=None):
 	try:
 		if cursor_factory:
 			yield con.cursor(cursor_factory=cursor_factory)
-			con.commit()
 		else:
 			yield con.cursor()
-			con.commit()
+		con.commit()
 	finally:
 		connpool.putconn(con)
 
@@ -83,8 +82,7 @@ def db_newpaste(cursor, opt, stats):
 def db_getpaste(cursor, pasteid):
 	with cursor as cur:
 		cur.execute(("""SELECT * FROM pastes WHERE pasteid = %s;"""), (pasteid,))
-		r = cur.fetchone()
-	return r
+	return cur.fetchone()
 
 
 def db_deletepaste(cursor, pasteid):
@@ -159,9 +157,6 @@ def newpaste():
 		return render_template('newpaste.html', \
 				lexers_all=lexers_all, lexers_common=config.lexers_common, \
 				ttl=config.ttl_options, paste_limits=config.paste_limits)
-	else:
-		abort(405)
-
 
 @app.route('/<pasteid>', methods=['GET', 'DELETE'])
 def viewpaste(pasteid):
@@ -215,8 +210,6 @@ def viewpaste(pasteid):
 			return config.msg_paste_deleted, 200
 		else:
 			return config.msg_err_401, 401
-	else:
-		abort(405)
 
 @app.route('/plain/<pasteid>', methods=['GET', 'DELETE'])
 @app.route('/raw/<pasteid>', methods=['GET', 'DELETE'])
