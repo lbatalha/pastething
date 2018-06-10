@@ -73,10 +73,10 @@ def db_newpaste(cursor, opt, stats):
 	with cursor as cur:
 		cur.execute("""INSERT INTO
 			pastes (pasteid, token, lexer, expiration, burn,
-			paste, size, lines, sloc)
-			VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s);""", \
+			paste, paste_lexed, size, lines, sloc)
+			VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s);""", \
 			(opt['pasteid'], opt['token'], opt['lexer'], \
-			date, opt['burn'], opt['paste'], \
+			date, opt['burn'], opt['paste'], opt['paste_lexed'], \
 			stats['size'], stats['lines'], stats['sloc']))
 
 def db_getpaste(cursor, pasteid):
@@ -114,9 +114,15 @@ def newpaste():
 			return config.msg_invalid_ttl, 400
 		try:
 			if paste_opt['lexer'] == 'auto':
-				paste_opt['lexer'] = guess_lexer(paste_opt['paste']).aliases[0]
+				lexer = guess_lexer(paste_opt['paste'])
+				paste_opt['lexer'] = lexer.aliases[0]
 		except pygments.util.ClassNotFound:
 			paste_opt['lexer'] = 'text'
+			lexer = get_lexer_by_name(paste_opt['lexer'])
+
+		formatter = HtmlFormatter(nowrap=True, cssclass='paste')
+		paste_opt['paste_lexed'] = highlight(paste_opt['paste'], lexer, formatter)
+
 		try:
 			if paste_opt['burn'] == '' or paste_opt['burn'] == 0 or paste_opt['burn'] == config.defaults['burn']:
 				paste_opt['burn'] = config.defaults['burn']
@@ -179,14 +185,10 @@ def viewpaste(pasteid):
 		if request.args.get('d') is not None:
 			direction = 'rtl'
 
-		lexer = get_lexer_by_name(result['lexer'])
-		formatter = HtmlFormatter(nowrap=True, cssclass='paste')
-		paste = highlight(result['paste'], lexer, formatter)
-
 		stats = {'lines': result['lines'],
 				'sloc': result['sloc'],
 				'size': result['size'],
-				'lexer': lexer.name
+				'lexer': result['lexer']
 		}
 		messages = get_flashed_messages()
 		if messages:
@@ -196,7 +198,7 @@ def viewpaste(pasteid):
 
 		del_url = url_for('deletepaste', pasteid=pasteid, token=token)
 		return render_template('viewpaste.html', \
-			stats=stats, paste=paste.split("\n"), direction=direction, delete=del_url)
+			stats=stats, paste=result['paste_lexed'].split("\n"), direction=direction, delete=del_url)
 
 	elif request.method == 'DELETE':
 		result = db_getpaste(getcursor(cursor_factory=DictCursor), pasteid)
