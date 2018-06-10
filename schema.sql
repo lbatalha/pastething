@@ -12,8 +12,9 @@ CREATE TABLE pastes(
 	expiration timestamp NOT NULL,
 	burn int NOT NULL,
 	paste text NOT NULL,
-	size int ,
-	lines int ,
+	paste_lexed text,
+	size int,
+	lines int,
 	sloc int
 );
 CREATE TABLE stats (
@@ -32,4 +33,3 @@ INSERT INTO stats (metric, counter) VALUES ('totalviews', 0);
 GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO pastebin;
 GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO pastebin;
 ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON SEQUENCES TO pastebin;
-
