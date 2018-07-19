@@ -110,7 +110,7 @@ WantedBy=multi-user.target
 
 ### Example gunicorn config file
 
-Only the post-fork hook is defined in the cpy.pt config file, the service specific configs are defined in the systemd service file above
+Only the post-fork hook is defined in the cpy.pt config file, the service specific configs are defined in the systemd service file above.
 This will monkeypatch psycopg every time a new worker is forked.
 ```
 from psycogreen.gevent import patch_psycopg
@@ -119,7 +119,7 @@ def post_fork(server, worker):
 	patch_psycopg()
 ```
 
-To validate that you dont have blocking issues simply add a long timer to a db endpoint and simultaniously query that endpoint and one that does not have any blocking calls.
+To validate that you dont have blocking issues simply add a long timer to a db endpoint and simultaneously query that endpoint and one that does not have any blocking calls.
 The easiest way is to add `cur.execute("SELECT pg_sleep(1);")` just before the return statement of the `getstats` function, then simply setup some load testing application to hit the `/about` and `/stats` endpoint.
 The desired behaviour is the `/about` endpoint having normal response times (few mileseconds) and the `/stats` endpoint having >1s response times.
 If the `/about` endpoint does not have consistent response times then you are blocking.
