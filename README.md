@@ -119,7 +119,7 @@ def post_fork(server, worker):
 	patch_psycopg()
 ```
 
-To validate that you dont have blocking issues simply add a long timer to a db endpoint and simultaneously query that endpoint and one that does not have any blocking calls.
+To validate that you don't have blocking issues simply add a long timer to a db endpoint and simultaneously query that endpoint and one that does not have any blocking calls.
 The easiest way is to add `cur.execute("SELECT pg_sleep(1);")` just before the return statement of the `getstats` function, then simply setup some load testing application to hit the `/about` and `/stats` endpoint.
 The desired behaviour is the `/about` endpoint having normal response times (few mileseconds) and the `/stats` endpoint having >1s response times.
 If the `/about` endpoint does not have consistent response times then you are blocking.
@@ -130,7 +130,7 @@ You can also use the `eventlet` worker type with gunicorn as this should automat
 ### gc.py
 
 This file is just a simple script used to delete all expire pastes.
-Although all expired pastes are deleted when they are requested, that still leaves the possibility of stale pastes. This makes sure we dont leave garbage behind.
+Although all expired pastes are deleted when they are requested, that still leaves the possibility of stale pastes. This makes sure we don't leave garbage behind.
 This is preferable to running the garbage collection query on every request to reduce overhead.
 
 The easiest way to set this up is using cron.
