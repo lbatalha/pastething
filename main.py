@@ -112,10 +112,13 @@ def newpaste():
 				return config.msg_invalid_ttl, 400
 		except ValueError:
 			return config.msg_invalid_ttl, 400
+		lexer = ""
 		try:
 			if paste_opt['lexer'] == 'auto':
 				lexer = guess_lexer(paste_opt['paste'])
 				paste_opt['lexer'] = lexer.aliases[0]
+			else:
+				lexer = get_lexer_by_name(paste_opt['lexer'])
 		except pygments.util.ClassNotFound:
 			paste_opt['lexer'] = 'text'
 			lexer = get_lexer_by_name(paste_opt['lexer'])
