@@ -1,36 +1,37 @@
 sudo: required
-dist: trusty
+dist: xenial
 branches:
         only:
                 - master
                 - tests
 language: python
 python:
-        - "3.4"
         - "3.5"
         - "3.6"
+        - "3.7"
 
 addons:
+        postgresql: "10"
         apt:
-                sources:
-                        - precise-pgdg-9.6
                 packages:
-                        - postgresql-9.6
-                        - postgresql-contrib-9.6
-                postgresql: "9.6"
+                        - postgresql-10
+                        - postgresql-client-10
+env:
+  global:
+  - PGPORT=5432
 
-install: 
+services:
+        - postgresql
+install:
         - "pip install -r requirements.txt"
         - "pip install pylint requests"
-        
+
 before_script:
-        - "sudo service postgresql start 9.6"
-        - "ls -la /var/run/postgresql/"
         - psql -U postgres -f schema.sql
         - "cp config.py.example config.py"
 
 
-script: 
+script:
         - "pylint main.py gc.py stats.py"
         - "python3 main.py &"
         - "pytest tests.py"
