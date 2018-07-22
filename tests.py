@@ -86,6 +86,20 @@ def test_pastettl():
 	r = requests.get(response[0])
 	assert r.status_code == 404
 
+def test_lexer():
+	# basic tests to ensure no errors when defining explicit lexers
+	# TODO?: add tests to check requested lexer is used when retrieving paste
+	params = {'paste': 'test', 'raw': 'true', 'lexer': 'text'}
+	r = requests.post(url, data=params)
+	assert r.status_code == 200
+	params = {'paste': 'test', 'raw': 'true', 'lexer': 'bash'}
+	r = requests.post(url, data=params)
+	assert r.status_code == 200
+	params = {'paste': 'test', 'raw': 'true', 'lexer': '∞'}
+	r = requests.post(url, data=params)
+	assert r.status_code == 200
+
+
 # For python 3.5+ only
 if sys.version_info.major == 3 and sys.version_info.minor >= 5:
 	def test_garbagecollect():
