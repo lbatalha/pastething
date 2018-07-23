@@ -16,7 +16,7 @@ from pygments.formatters import HtmlFormatter
 from flask import Flask, \
 		render_template, url_for, flash, \
 		request, redirect, Response, abort, \
-		get_flashed_messages
+		get_flashed_messages, make_response
 
 from stats import pasteview, pastecount, getstats
 
@@ -45,6 +45,11 @@ def getcursor(cursor_factory=None):
 def plain(text):
 	resp = Response(text)
 	resp.headers['Content-Type'] = 'text/plain; charset=utf-8'
+	return resp
+
+def set_cache_control(resp, max_age=69):
+	resp.cache_control.public = True
+	resp.cache_control.max_age = int(max_age)
 	return resp
 
 def paste_stats(text):
@@ -163,9 +168,9 @@ def newpaste():
 		return redirect(paste_opt['pasteid'])
 	elif request.method == 'GET':
 		lexers_all = sorted(get_all_lexers())
-		return render_template('newpaste.html', \
+		return set_cache_control(make_response(render_template('newpaste.html', \
 				lexers_all=lexers_all, lexers_common=config.lexers_common, \
-				ttl=config.ttl_options, paste_limits=config.paste_limits)
+				ttl=config.ttl_options, paste_limits=config.paste_limits)), config.nonpaste_max_age)
 
 @app.route('/<pasteid>', methods=['GET', 'DELETE'])
 def viewpaste(pasteid):
@@ -183,7 +188,7 @@ def viewpaste(pasteid):
 		pasteview(getcursor()) #count towards total paste views
 
 		if request.args.get('raw') is not None:
-			return plain(result['paste'])
+			return set_cache_control(plain(result['paste']), config.paste_max_age)
 
 		if request.args.get('d') is not None:
 			direction = 'rtl'
@@ -200,8 +205,9 @@ def viewpaste(pasteid):
 			token = ''
 
 		del_url = url_for('deletepaste', pasteid=pasteid, token=token)
-		return render_template('viewpaste.html', \
-			stats=stats, paste=result['paste_lexed'].split("\n"), direction=direction, delete=del_url)
+		resp = make_response(render_template('viewpaste.html', \
+			stats=stats, paste=result['paste_lexed'].split("\n"), direction=direction, delete=del_url))
+		return set_cache_control(resp, config.paste_max_age)
 
 	elif request.method == 'DELETE':
 		result = db_getpaste(getcursor(cursor_factory=DictCursor), pasteid)
@@ -231,7 +237,7 @@ def viewraw(pasteid):
 
 		pasteview(getcursor()) #count towards total paste views
 
-		return plain(result['paste'])
+		return set_cache_control(plain(result['paste']), config.paste_max_age)
 
 	elif request.method == 'DELETE':
 		result = db_getpaste(getcursor(cursor_factory=DictCursor), pasteid)
@@ -261,17 +267,16 @@ def	deletepaste(pasteid, token):
 
 @app.route('/about/api')
 def aboutapi():
-	return render_template('api.html')
+	return set_cache_control(make_response(render_template('api.html')), config.nonpaste_max_age)
 
 @app.route('/about')
 def aboutpage():
-	return render_template('about.html')
+	return set_cache_control(make_response(render_template('about.html')), config.nonpaste_max_age)
 
 @app.route('/stats')
 def statspage():
 	stats = getstats(getcursor(cursor_factory=DictCursor))
-	return render_template('stats.html', stats=stats)
-
+	return set_cache_control(make_response(render_template('stats.html', stats=stats)), config.nonpaste_max_age)
 
 @app.errorhandler(404)
 def page_not_found(e):
@@ -280,6 +285,9 @@ def page_not_found(e):
 @app.errorhandler(500)
 def internal_server_error(e):
 	return render_template('500.html'), 500
+
+
+
 
 if __name__ == '__main__':
 	app.debug = False
