@@ -22,6 +22,10 @@ secret_key = 'CHANGEME' #CHANGE THIS IN PRODUCTION - set it to some random strin
 max_content_length = 2 * 1024 * 1024 #max form upload size in bits
 domain = 'http://127.0.0.1:5000' #set correctly, used for raw POST response
 
+#max_age values
+paste_max_age = 30 #keep this small. This could mean the max amount of time after a paste should no longer be available where it can still be returned. eg: paste deletes
+nonpaste_max_age = 360 #pick a moderately small value if you have nginx caching in front of this, easier to invalidate cache for non paste pages that way
+
 #postgresql configuration
 dsn = "host=localhost port=5432 dbname='pastebin' user='pastebin' password='1234'"
 
