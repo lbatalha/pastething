@@ -33,6 +33,14 @@ Example: https://cpy.pt/
 
 ```
 server {
+        listen 80;
+        listen [::]:80;
+        server_name cpy.pt;
+        return 301 https://$host$request_uri;
+}
+proxy_cache_path /home/pastebin/nginx_cache/ levels=1:2 keys_zone=cpy_pt:10m max_size=1g
+        inactive=60m use_temp_path=off;
+server {
         listen 443 http2;
         listen [::]:443 http2;
         server_name cpy.pt;
@@ -70,12 +78,17 @@ server {
                 proxy_redirect off;
                 proxy_read_timeout 30;
                 proxy_pass http://unix:/var/run/pastebin/cpy.pt.sock:;
+                proxy_cache_use_stale error timeout http_500 http_502 http_503 http_504;
+                proxy_cache_lock on;
+                proxy_cache cpy_pt;
         }
 
         location /static {
                 root /home/pastebin/pastething/;
                 add_header Cache-Control "public, max-age=864000";
-
+                proxy_cache_use_stale error timeout http_500 http_502 http_503 http_504;
+                proxy_cache_lock on;
+                proxy_cache cpy_pt;
         }
         location =/robots.txt {
                 root /home/pastebin/pastething/;
