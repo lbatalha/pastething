@@ -142,6 +142,7 @@ def newpaste():
 		url_len = config.url_len
 		paste_opt['pasteid'] = ''
 		while url_collision(getcursor(), paste_opt['pasteid']):
+			paste_opt['pasteid'] = ''
 			for _ in range(url_len):
 				paste_opt['pasteid'] += choice(config.url_alph)
 			url_len += 1
