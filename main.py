@@ -256,7 +256,7 @@ def viewraw(pasteid):
 		return "invalid http method\n"
 
 @app.route('/<pasteid>/<token>', methods=['GET'])
-def	deletepaste(pasteid, token):
+def deletepaste(pasteid, token):
 	result = db_getpaste(getcursor(cursor_factory=DictCursor), pasteid)
 	if not result:
 		abort(404)
