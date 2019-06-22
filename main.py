@@ -142,6 +142,7 @@ def newpaste():
 		url_len = config.url_len
 		paste_opt['pasteid'] = ''
 		while url_collision(getcursor(), paste_opt['pasteid']):
+			paste_opt['pasteid'] = ''
 			for _ in range(url_len):
 				paste_opt['pasteid'] += choice(config.url_alph)
 			url_len += 1
@@ -255,7 +256,7 @@ def viewraw(pasteid):
 		return "invalid http method\n"
 
 @app.route('/<pasteid>/<token>', methods=['GET'])
-def	deletepaste(pasteid, token):
+def deletepaste(pasteid, token):
 	result = db_getpaste(getcursor(cursor_factory=DictCursor), pasteid)
 	if not result:
 		abort(404)
