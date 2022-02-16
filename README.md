@@ -41,18 +41,17 @@ server {
 proxy_cache_path /home/pastebin/nginx_cache/ levels=1:2 keys_zone=cpy_pt:10m max_size=1g
         inactive=60m use_temp_path=off;
 server {
-        listen 443 http2;
-        listen [::]:443 http2;
+        listen 443 ssl http2;
+        listen [::]:443 ssl http2;
         server_name cpy.pt;
 
         keepalive_timeout 5;
 
-        client_max_body_size 2M;
+        client_max_body_size 5M;
 
         ssl_certificate /etc/letsencrypt/live/cpy.pt/fullchain.pem;
         ssl_certificate_key /etc/letsencrypt/live/cpy.pt/privkey.pem;
 
-        ssl on;
         ssl_session_cache  builtin:1000  shared:SSL:20m;
         ssl_session_timeout 5m;
         ssl_protocols  TLSv1 TLSv1.1 TLSv1.2;
