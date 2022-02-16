@@ -17,7 +17,7 @@ on:
 jobs:
   # This workflow contains a single job called "build"
   build:
-    name: Build Python ${{ matrix.python_version }} and ${{ matrix.os }}
+    name: Build Python ${{ matrix.python_version }}, PSQL ${{ matrix.psql_version }} and ${{ matrix.os }}
     # The type of runner that the job will run on
     runs-on: ${{ matrix.os }}
     timeout-minutes: 10
@@ -43,8 +43,8 @@ jobs:
           
       - name: Setup PostgreSQL
         run: |
-          apt update
-          apt install --yes --no-install-recommends postgresql-client-${{ matrix.psql_version }} postgresql-${{ matrix.psql_version }}
+          sudo apt update
+          sudo apt install --yes --no-install-recommends postgresql-client-${{ matrix.psql_version }} postgresql-${{ matrix.psql_version }}
 
         
       - name: Setup Schema
