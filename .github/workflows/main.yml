@@ -23,7 +23,8 @@ jobs:
     timeout-minutes: 10
     strategy:
       matrix:
-        node_version: ['3.5', '3.6', '3.7', '3.8', '3.9', '3.10']
+        python_version: ['3.5', '3.6', '3.7', '3.8', '3.9', '3.10']
+        psql_version: ['13']
         os: [ubuntu-latest]
 
 
@@ -37,24 +38,17 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v2.3.2
         with:
-          # Version range or exact version of a Python version to use, using SemVer's version range syntax.
           python-version: ${{ matrix.python_version }} # optional, default is 3.x
-          # The target architecture (x86, x64) of the Python interpreter.
           architecture: x64
           
       - name: Setup PostgreSQL
-        # You may pin to the exact commit or the version.
-        # uses: Harmon758/postgresql-action@0be19fa37850b22cb4c9bbf28a03abbf44abd863
-        uses: m4nu56/postgresql-action@1.0
-        with:
-          # Version of PostgreSQL to use
-          postgresql version: 13
-          postgresql init scripts: schema.sql
+        run: |
+          apt update
+          apt install --yes --no-install-recommends postgresql-client-${{ matrix.psql_version } postgresql-${{ matrix.psql_version }
+
         
-      #- name: Setup PSQL
-      #  uses: akanieski/setup-postgres-cli@v0.1.2
-      #  with:
-      #    commands: psql -U postgres -f schema.sql
+      - name: Setup Schema
+        run: psql -U postgres -f schema.sql
       - name: Install Main Dependencies
         run: pip install -r requirements.txt
       - name: Install Test Dependencies
