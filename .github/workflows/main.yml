@@ -48,7 +48,7 @@ jobs:
       - name: Start Cluster
         run: sudo pg_ctlcluster ${{ matrix.psql_version }} main start
       - name: Setup Schema
-        run: sudo psql -U postgres -f schema.sql
+        run: psql -U postgres -h 127.0.0.1 -f schema.sql
       - name: Install Main Dependencies
         run: pip install -r requirements.txt
       - name: Install Test Dependencies
