@@ -46,7 +46,7 @@ jobs:
           sudo apt update
           sudo apt install --yes postgresql-client-${{ matrix.psql_version }} postgresql-${{ matrix.psql_version }}
       - name: Start Cluster
-        run: pg_ctlcluster ${{ matrix.psql_version }} main start
+        run: sudo pg_ctlcluster ${{ matrix.psql_version }} main start
       - name: Setup Schema
         run: psql -U postgres -f schema.sql
       - name: Install Main Dependencies
