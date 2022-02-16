@@ -24,14 +24,23 @@ jobs:
     strategy:
       matrix:
         python_version: ['3.5', '3.6', '3.7', '3.8', '3.9', '3.10']
-        psql_version: ['12']
+        psql_version: ['13']
         os: [ubuntu-latest]
-
+    services:
+        postgres:
+          image: postgres:${{ matrix.psql_version }}
+          ports:
+            # maps tcp port 5432 on service container to the host
+            - 5432:5432
+          # set health checks to wait until postgres has started
+          options: >-
+            --health-cmd pg_isready
+            --health-interval 10s
+            --health-timeout 5s
+            --health-retries 5
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-
-   
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
 
@@ -44,11 +53,9 @@ jobs:
       - name: Setup PostgreSQL
         run: |
           sudo apt update
-          sudo apt install --yes postgresql-client-${{ matrix.psql_version }} postgresql-${{ matrix.psql_version }}
-      - name: Start Cluster
-        run: sudo systemctl start postgresql@12-main.service 
+          sudo apt install --yes postgresql-client
       - name: Setup Schema
-        run: sudo psql -U postgres -f schema.sql
+        run: psql -U postgres -h postgres -f schema.sql
       - name: Install Main Dependencies
         run: pip install -r requirements.txt
       - name: Install Test Dependencies
