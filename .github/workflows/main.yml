@@ -29,6 +29,8 @@ jobs:
     services:
         postgres:
           image: postgres:${{ matrix.psql_version }}
+          env:
+            POSTGRES_PASSWORD: postgres
           ports:
             # maps tcp port 5432 on service container to the host
             - 5432:5432
@@ -56,6 +58,8 @@ jobs:
           sudo apt install --yes postgresql-client
       - name: Setup Schema
         run: psql -U postgres -h postgres -f schema.sql
+        env:
+          PGPASSWORD: postgres
       - name: Install Main Dependencies
         run: pip install -r requirements.txt
       - name: Install Test Dependencies
