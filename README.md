@@ -5,7 +5,7 @@ Example: https://cpy.pt/
 
 ## Dependencies
 
-* postgresql-9.5 <
+* postgresql (tested up to 15)
 * python3 (3.3+)
 * python3-flask
 * python3-pygments
@@ -31,7 +31,7 @@ Example: https://cpy.pt/
 
 ## nginx config used for cpy.pt
 
-```
+```nginx
 server {
         listen 80;
         listen [::]:80;
@@ -48,6 +48,8 @@ server {
         keepalive_timeout 5;
 
         client_max_body_size 5M;
+
+        access_log off;
 
         ssl_certificate /etc/letsencrypt/live/cpy.pt/fullchain.pem;
         ssl_certificate_key /etc/letsencrypt/live/cpy.pt/privkey.pem;
@@ -124,7 +126,7 @@ WantedBy=multi-user.target
 
 Only the post-fork hook is defined in the cpy.pt config file, the service specific configs are defined in the systemd service file above.
 This will monkeypatch psycopg every time a new worker is forked.
-```
+```python
 from psycogreen.gevent import patch_psycopg
 
 def post_fork(server, worker):
@@ -141,7 +143,7 @@ You can also use the `eventlet` worker type with gunicorn as this should automat
 
 ### gc.py
 
-This file is just a simple script used to delete all expire pastes.
+This file is just a simple script used to delete all expired pastes.
 Although all expired pastes are deleted when they are requested, that still leaves the possibility of stale pastes. This makes sure we don't leave garbage behind.
 This is preferable to running the garbage collection query on every request to reduce overhead.
 
