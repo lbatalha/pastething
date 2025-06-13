@@ -9,20 +9,20 @@
 <p>At the moment we provide a simple HTTP API</p>
 <p>Its mainly useful for non-browser such as curl/wget</p>
 <ul>
-	<li><strong>New Paste</strong> - Send a POST request to / with the available parameters:</li>
-	<ul>
-		<li>paste - the thing you want to paste - REQUIRED</li>
-		<li>ttl - the time in hours the paste will be available for before deletion - defaults to 1 hour</li>
-		<li>lexer - define the lexer to use for the paste - defaults to auto-detection.</li>
-		<li>burn - number of times the paste can be viewed before it is deleted - disabled by default</li>
-		<li>raw - any value except 'true' (default) will return a URL pointing to the non-raw version of the paste</li>
-	</ul>
-	<li><strong>Retrieve raw paste</strong> - Send a GET request to either /&ltpasteid&gt?raw or use the endpoints 'raw' or 'plain' - /raw/&ltpasteid&gt</li>
-	<li><strong>Delete a paste</strong> - Use the token received when creating the paste</li>
-	<ul>
-		<li>Send a DELETE request to /&ltpasteid&gt (or the raw/plain equivalent) with the parameter 'token=&ltyourtoken&gt' or set the request header 'token: &ltyourtoken&gt'</li>
-		<li>Send a GET request to /&ltpasteid&gt/&ltyourtoken&gt (this will reply with a full html page)</li>
-	</ul>
+    <li><strong>New Paste</strong> - Send a POST request to / with the available parameters:</li>
+    <ul>
+        <li>paste - the thing you want to paste - REQUIRED</li>
+        <li>ttl - the time in hours the paste will be available for before deletion - defaults to 1 hour</li>
+        <li>lexer - define the lexer to use for the paste - defaults to auto-detection.</li>
+        <li>burn - number of times the paste can be viewed before it is deleted - disabled by default</li>
+        <li>raw - any value except 'true' (default) will return a URL pointing to the non-raw version of the paste</li>
+    </ul>
+    <li><strong>Retrieve raw paste</strong> - Send a GET request to either /&ltpasteid&gt?raw or use the endpoints 'raw' or 'plain' - /raw/&ltpasteid&gt</li>
+    <li><strong>Delete a paste</strong> - Use the token received when creating the paste</li>
+    <ul>
+        <li>Send a DELETE request to /&ltpasteid&gt (or the raw/plain equivalent) with the parameter 'token=&ltyourtoken&gt' or set the request header 'token: &ltyourtoken&gt'</li>
+        <li>Send a GET request to /&ltpasteid&gt/&ltyourtoken&gt (this will reply with a full html page)</li>
+    </ul>
 </ul>
 
 <h2><u><a href='https://github.com/lbatalha/capyt'>A simple CLI client is available</a></u></h2>

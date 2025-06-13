@@ -1,35 +1,35 @@
 <!DOCTYPE html>
 <html>
-	<head>
-		{% block head %}
-		<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles/main.css') }}">
-		<title>{% block title %}{% endblock %} - cpy.pt</title>
-		<meta name=viewport content="width=device-width, initial-scale=1">
-		<meta name="description" content="cpy.pt: the pastebin for security, privacy, and freedom.">
-
-		{% endblock %}
-	</head>
-	<body>
-		<div id='maindiv'>
-			<div id='wrapper' dir='{{ direction }}'>
-				<div id='header'>
-					<div id='logo'>
-						<a href="/">cpy.pt</a>
-					</div>
-					{% block header %}{% endblock %}
-					<div id='nav'>
-						<a href="/about">Info</a>
-						<a href="/about/api">API</a>
-						<a href="/stats">Stats</a>
-					</div>
-				</div>
-				{% block content %}{% endblock %}
-				<div id="footer">
-					{% block footer %}
-						Copyright &copy; {{ year }} cpy.pt
-					{% endblock %}
-				</div>
-			</div>
-		</div>
-	</body>
+    <head>
+        {% block head %}
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles/main.css') }}">
+        <title>{% block title %}{% endblock %} - cpy.pt</title>
+        <meta name=viewport content="width=device-width, initial-scale=1">
+        <meta name="description" content="cpy.pt: the pastebin for security, privacy, and freedom.">
+        <meta name="color-scheme" content="dark">
+        {% endblock %}
+    </head>
+    <body>
+        <div id='maindiv'>
+            <div id='wrapper' dir='{{ direction }}'>
+                <div id='header'>
+                    <div id='logo'>
+                        <a href="/">cpy.pt</a>
+                    </div>
+                    {% block header %}{% endblock %}
+                    <div id='nav'>
+                        <a href="/about">Info</a>
+                        <a href="/about/api">API</a>
+                        <a href="/stats">Stats</a>
+                    </div>
+                </div>
+                {% block content %}{% endblock %}
+                <div id="footer">
+                    {% block footer %}
+                        Copyright &copy; {{ year }} cpy.pt
+                    {% endblock %}
+                </div>
+            </div>
+        </div>
+    </body>
 </html>
