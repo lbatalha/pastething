@@ -1,15 +1,12 @@
 services:
   pastething:
     container_name: pastething
-    image: ghcr.io/lbatalha/pastething:latest
-    # image: pastething:latest
-    # build: .
-    # pull_policy: build
+    image: ghcr.io/lbatalha/pastething:master
     stop_grace_period: "60s"
     restart: unless-stopped
     volumes:
       - ./gunicorn.conf.py:/config/gunicorn.conf.py:ro
-      - ./config.py:/config/config.py:ro
+      - ./config.py:/app/bin/config.py:ro
     ports:
       - 127.0.0.1:8000:8000/tcp
     deploy:
