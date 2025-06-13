@@ -60,6 +60,8 @@ jobs:
         run: psql ${{ steps.postgres.outputs.connection-uri }} -f schema.sql
       - name: Setup Config
         run: cp config.py.example config.py
+      - name: Install pytest
+        run: pip3 install pytest
       - name: Run Main
         run: python3 main.py &
       - name: Run Tests
