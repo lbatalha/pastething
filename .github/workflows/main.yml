@@ -1,5 +1,8 @@
 name: CI
 
+env:
+  REGISTRY_IMAGE: ghcr.io/${{ github.repository_owner }}/pastething
+
 on:
   push:
     branches:
@@ -17,6 +20,14 @@ on:
   workflow_dispatch:
 
 jobs:
+  ruff:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/ruff-action@v3
+        with:
+          src: "./src"
+
   test:
     name: Build Python ${{ matrix.python_version }} on ${{ matrix.architecture }}
     runs-on: ubuntu-latest
@@ -30,7 +41,6 @@ jobs:
           - '3.13'
         architecture:
           - x64
-          - arm64
 
     steps:
       - uses: actions/checkout@v2
@@ -44,15 +54,12 @@ jobs:
       - name: Setup PostgreSQL
         uses: Harmon758/postgresql-action@v1.0.0
         with:
-          postgresql version: 15
+          postgresql version: 17
 
       - name: Setup PSQL
         run: psql -U postgres -f schema.sql
       - name: Setup Config
         run: cp config.py.example config.py
-      # TODO: Migrate to Ruff
-      # - name: Lint Code
-      #   run: pylint main.py gc.py stats.py
       - name: Run Main
         run: python3 main.py &
       - name: Run Tests
