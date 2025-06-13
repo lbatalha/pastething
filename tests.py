@@ -2,12 +2,8 @@ from time import sleep
 
 import requests
 import subprocess
-import sys
 
-import main
 import config
-import stats
-import paste_gc
 
 url = "http://localhost:5000/"
 
