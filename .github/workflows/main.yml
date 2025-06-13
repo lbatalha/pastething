@@ -1,65 +1,178 @@
-# This is a basic workflow to help you get started with Actions
-
 name: CI
 
-# Controls when the workflow will run
+env:
+  REGISTRY_IMAGE: ghcr.io/${{ github.repository_owner }}/pastething
+
 on:
-  # Triggers the workflow on push or pull request events but only for the master branch
   push:
-    branches: [ master, tests ]
+    branches:
+      - '*'
+    tags:
+      - "[0-9]+.[0-9]+.[0-9]+*"
   pull_request:
-    branches: [ master ]
+    branches:
+      - master
+    paths-ignore:
+      - .gitignore
+      - LICENSE
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
-  build:
-    name: Build Python ${{ matrix.python_version }} and ${{ matrix.os }}
-    # The type of runner that the job will run on
-    runs-on: ${{ matrix.os }}
+  ruff:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/ruff-action@v3
+        with:
+          src: "."
+
+  test:
+    name: Build Python ${{ matrix.python_version }} on ${{ matrix.architecture }}
+    runs-on: ubuntu-latest
     timeout-minutes: 10
+    needs: ruff
     strategy:
       matrix:
-        node_version: ['3.5', '3.6', '3.7', '3.8', '3.9', '3.10']
-        os: [ubuntu-latest]
+        python_version:
+          - '3.10'
+          - '3.11'
+          - '3.12'
+          - '3.13'
+        architecture:
+          - x64
 
-
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-
-   
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
 
       - name: Setup Python
         uses: actions/setup-python@v2.3.2
         with:
-          # Version range or exact version of a Python version to use, using SemVer's version range syntax.
-          python-version: ${{ matrix.python_version }} # optional, default is 3.x
-          # The target architecture (x86, x64) of the Python interpreter.
-          architecture: x64
-          
-      - name: Setup PostgreSQL
-        # You may pin to the exact commit or the version.
-        # uses: Harmon758/postgresql-action@0be19fa37850b22cb4c9bbf28a03abbf44abd863
-        uses: Harmon758/postgresql-action@v1.0.0
+          python-version: ${{ matrix.python_version }}
+          architecture: ${{ matrix.architecture }}
+
+      - uses: ikalnytskyi/action-setup-postgres@v7
         with:
-          # Version of PostgreSQL to use
-          postgresql version: 13
-          # POSTGRES_DB - name for the default database that is created
-        
+          postgres-version: "17"
+        id: postgres
+
       - name: Setup PSQL
-        run: psql -U postgres -f schema.sql
+        run: psql ${{ steps.postgres.outputs.connection-uri }} -f schema.sql
       - name: Setup Config
         run: cp config.py.example config.py
-      - name: Lint Code
-        run: pylint main.py gc.py stats.py
+      - name: Install base requirements
+        run: pip3 install -r requirements.txt
+      - name: Install test requirements
+        run: pip3 install pytest requests
       - name: Run Main
         run: python3 main.py &
       - name: Run Tests
         run: pytest tests.py
 
-         
+  build-containers-release:
+    runs-on: ubuntu-latest
+    needs: test
+    permissions:
+      packages: write
+    strategy:
+      fail-fast: false
+      matrix:
+        platform:
+          - linux/amd64
+          - linux/arm64
+    steps:
+      - name: Prepare
+        run: |
+          platform=${{ matrix.platform }}
+          echo "PLATFORM_PAIR=${platform//\//-}" >> $GITHUB_ENV
+      - name: Docker meta
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY_IMAGE }}
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          path: .artifacts
+
+      - name: Build and push by digest
+        id: build
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: Dockerfile
+          platforms: ${{ matrix.platform }}
+          labels: ${{ steps.meta.outputs.labels }}
+          tags: ${{ env.REGISTRY_IMAGE }}
+          outputs: type=image,push-by-digest=true,name-canonical=true,push=true
+
+      - name: Export digest
+        run: |
+          mkdir -p ${{ runner.temp }}/digests
+          digest="${{ steps.build.outputs.digest }}"
+          touch "${{ runner.temp }}/digests/${digest#sha256:}"
+
+      - name: Upload digest
+        uses: actions/upload-artifact@v4
+        with:
+          name: digests-${{ env.PLATFORM_PAIR }}
+          path: ${{ runner.temp }}/digests/*
+          if-no-files-found: error
+          retention-days: 1
+
+  container-manifest-merge:
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+    needs:
+      - build-containers-release
+    steps:
+      - name: Download digests
+        uses: actions/download-artifact@v4
+        with:
+          path: ${{ runner.temp }}/digests
+          pattern: digests-*
+          merge-multiple: true
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Docker meta
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY_IMAGE }}
+          tags: |
+            type=ref,event=tag
+            type=ref,event=pr
+            type=ref,event=branch
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+
+      - name: Create manifest list and push
+        working-directory: ${{ runner.temp }}/digests
+        run: |
+          docker buildx imagetools create $(jq -cr '.tags | map("-t " + .) | join(" ")' <<< "$DOCKER_METADATA_OUTPUT_JSON") \
+            $(printf '${{ env.REGISTRY_IMAGE }}@sha256:%s ' *)
+
+      - name: Inspect image
+        run: |
+          docker buildx imagetools inspect ${{ env.REGISTRY_IMAGE }}:${{ steps.meta.outputs.version }}

@@ -1,0 +1,35 @@
+services:
+  pastething:
+    container_name: pastething
+    image: ghcr.io/lbatalha/pastething:latest
+    # image: pastething:latest
+    # build: .
+    # pull_policy: build
+    stop_grace_period: "60s"
+    restart: unless-stopped
+    volumes:
+      - ./gunicorn.conf.py:/config/gunicorn.conf.py:ro
+      - ./config.py:/config/config.py:ro
+    ports:
+      - 127.0.0.1:8000:8000/tcp
+    deploy:
+      resources:
+        limits:
+          memory: "500M"
+    depends_on:
+      - pastething-psql
+  pastething-psql:
+    container_name: pastething-postgres
+    image: postgres:17-alpine
+    stop_grace_period: "60s"
+    restart: unless-stopped
+    environment:
+      POSTGRES_PASSWORD: "1234"
+      PGDATA: "/var/lib/postgresql/data/pgdata"
+    volumes:
+      - ./data:/var/lib/postgresql/data:rw
+      - ./schema.sql:/docker-entrypoint-initdb.d/schema.sql:ro
+    deploy:
+      resources:
+        limits:
+          memory: "200M"

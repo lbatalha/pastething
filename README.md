@@ -1,33 +1,25 @@
-[![Build Status](https://travis-ci.org/lbatalha/pastething.svg?branch=master)](https://travis-ci.org/lbatalha/pastething)
 # A python3-flask pastebin
 
 Example: https://cpy.pt/
 
 ## Dependencies
 
-* postgresql (tested up to 15)
+* postgresql
 * python3 (3.3+)
-* python3-flask
-* python3-pygments
-* python3-psycopg2
+* flask
+* pygments
+* psycopg2
 
 ## Installation
 
 * install dependencies
-	* ```
-		pip install -r requirements.txt
-		```
+        * `pip install -r requirements.txt`
 * setup db with schema.sql
-	* ```
-		sudo -u postgres psql -f schema.db
-		```
+        * `sudo -u postgres psql -f schema.db`
 * copy config.py.example as config.py
-	* ```
-		cp config.py.example config.py
-		```
+        * `cp config.py.example config.py`
 * configure config.py - **make sure secret_key and domain are changed!**
 * use whatever wsgi server you want - (gunicorn!)
-
 
 ## nginx config used for cpy.pt
 
@@ -103,7 +95,8 @@ server {
 In production, cpy.pt uses gunicorn with gevent workers, to use gevent with psycopg2 without blocking issues you must monkeypatch the app (see below)
 
 ### Example systemd service file template:
-```
+
+```systemd
 [Unit]
 Description=cpy.pt gunicorn daemon
 After=network.target
@@ -126,11 +119,12 @@ WantedBy=multi-user.target
 
 Only the post-fork hook is defined in the cpy.pt config file, the service specific configs are defined in the systemd service file above.
 This will monkeypatch psycopg every time a new worker is forked.
+
 ```python
 from psycogreen.gevent import patch_psycopg
 
 def post_fork(server, worker):
-	patch_psycopg()
+        patch_psycopg()
 ```
 
 To validate that you don't have blocking issues simply add a long timer to a db endpoint and simultaneously query that endpoint and one that does not have any blocking calls.
@@ -140,8 +134,7 @@ If the `/about` endpoint does not have consistent response times then you are bl
 
 You can also use the `eventlet` worker type with gunicorn as this should automatically patch psycopg2 and the difference will be obvious.
 
-
-### gc.py
+### paste_gc.py
 
 This file is just a simple script used to delete all expired pastes.
 Although all expired pastes are deleted when they are requested, that still leaves the possibility of stale pastes. This makes sure we don't leave garbage behind.
