@@ -32,6 +32,7 @@ jobs:
     name: Build Python ${{ matrix.python_version }} on ${{ matrix.architecture }}
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    needs: ruff
     strategy:
       matrix:
         python_version:
@@ -60,6 +61,8 @@ jobs:
         run: psql ${{ steps.postgres.outputs.connection-uri }} -f schema.sql
       - name: Setup Config
         run: cp config.py.example config.py
+      - name: Install base requirements
+        run: pip3 install -r requirements.txt
       - name: Install test requirements
         run: pip3 install pytest requests
       - name: Run Main
@@ -69,6 +72,7 @@ jobs:
 
   build-containers-release:
     runs-on: ubuntu-latest
+    needs: test
     permissions:
       packages: write
     strategy:
