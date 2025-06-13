@@ -6,25 +6,25 @@ CREATE DATABASE pastebin OWNER pastebin;
 GRANT ALL PRIVILEGES ON DATABASE pastebin TO pastebin;
 \connect pastebin
 CREATE TABLE pastes(
-	pasteid varchar(32) PRIMARY KEY NOT NULL,
-	token varchar(32) NOT NULL,
-	lexer varchar(512) NOT NULL,
-	expiration timestamp NOT NULL,
-	burn int NOT NULL,
-	paste text NOT NULL,
-	paste_lexed text,
-	size int,
-	lines int,
-	sloc int
+    pasteid varchar(32) PRIMARY KEY NOT NULL,
+    token varchar(32) NOT NULL,
+    lexer varchar(512) NOT NULL,
+    expiration timestamp NOT NULL,
+    burn int NOT NULL,
+    paste text NOT NULL,
+    paste_lexed text,
+    size int,
+    lines int,
+    sloc int
 );
 CREATE TABLE stats (
-	metric varchar(32) PRIMARY KEY NOT NULL,
-	counter bigint NOT NULL
+    metric varchar(32) PRIMARY KEY NOT NULL,
+    counter bigint NOT NULL
 );
 CREATE TABLE dailystats (
-	date timestamp PRIMARY KEY NOT NULL,
-	pastecount int NOT NULL DEFAULT 0,
-	pasteviews int NOT NULL DEFAULT 0
+    date timestamp PRIMARY KEY NOT NULL,
+    pastecount int NOT NULL DEFAULT 0,
+    pasteviews int NOT NULL DEFAULT 0
 );
 
 INSERT INTO stats (metric, counter) VALUES ('totalpastes', 0);
