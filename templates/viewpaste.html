@@ -6,33 +6,33 @@
 {% block title %}Paste{% endblock %}
 {% block content %}
 <div id='info'>
-	<div id='raw'><a href="?raw">raw</a></div>
-	<div class='pipediv'>|</div>
-	<div id='wrap'><a href="">wrap</a></div>
-	<div class='pipediv'>|</div>
-	<div id='dir'><a href="?d">dir</a></div>
-	<div class='pipediv'>|</div>
-	<div id='indent'><a href="">indent</a></div>
-	<div class='pipediv'>|</div>
-	<div id='lexer'> {{ stats['lexer'] }} </div>
-	<div class='pipediv'>|</div>
-	<div id='lines'> {{ stats['lines'] }} lines</div>
-	<div class='pipediv'>|</div>
-	<div id='sloc'> {{ stats['sloc'] }} sloc </div>
-	<div class='pipediv'>|</div>
-	<div id='size'> {{ stats['size']/1000 }} kB</div>
-	{% with messages = get_flashed_messages() %}
-	{% if messages %}
-	<div class='pipediv'>|</div>
-	<div id='delete'><a href="{{ delete }}">delete </a> token: {{ messages[0] }}</div>
-	{% endif %}
-	{% endwith %}
+    <div id='raw'><a href="?raw">raw</a></div>
+    <div class='pipediv'>|</div>
+    <div id='wrap'><a href="">wrap</a></div>
+    <div class='pipediv'>|</div>
+    <div id='dir'><a href="?d">dir</a></div>
+    <div class='pipediv'>|</div>
+    <div id='indent'><a href="">indent</a></div>
+    <div class='pipediv'>|</div>
+    <div id='lexer'> {{ stats['lexer'] }} </div>
+    <div class='pipediv'>|</div>
+    <div id='lines'> {{ stats['lines'] }} lines</div>
+    <div class='pipediv'>|</div>
+    <div id='sloc'> {{ stats['sloc'] }} sloc </div>
+    <div class='pipediv'>|</div>
+    <div id='size'> {{ stats['size']/1000 }} kB</div>
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    <div class='pipediv'>|</div>
+    <div id='delete'><a href="{{ delete }}">delete </a> token: {{ messages[0] }}</div>
+    {% endif %}
+    {% endwith %}
 </div>
 <div id='content'>
-	<ol>
-		{% for i in range(stats['lines']) %}
-		<li class='linenos'><pre class='pastelines'>{{paste[i]|safe}}&nbsp;</pre></li>
-		{% endfor %}
-	</ol>
+    <ol>
+        {% for i in range(stats['lines']) %}
+        <li class='linenos'><pre class='pastelines'>{{paste[i]|safe}}&nbsp;</pre></li>
+        {% endfor %}
+    </ol>
 </div>
 {% endblock %}

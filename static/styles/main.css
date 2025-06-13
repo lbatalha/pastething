@@ -1,13 +1,13 @@
 body {
-	background-color: #171812;
-	margin: auto;
-	font-size: 16px;
+    background-color: #171812;
+    margin: auto;
+    font-size: 16px;
 }
 
 #maindiv {
-	max-width: 90%;
-	min-width: 30ch;
-	margin: auto;
+    max-width: 90%;
+    min-width: 30ch;
+    margin: auto;
 }
 
 a { text-decoration: none; }
@@ -17,30 +17,30 @@ a:hover{ color: #e6db74}
 
 
 #wrapper {
-	width: auto;
-	font-family: monospace;
-	margin: 0 1em 0 1em;
+    width: auto;
+    font-family: monospace;
+    margin: 0 1em 0 1em;
 }
 
 /*--- page header ----*/
 
 #header {
-	display: flex;
-	flex-direction: row;
-	flex-wrap: nowrap;
-	justify-content: space-between;
-	align-items: center;
-	margin: 0.5em 0 0.5em 0;
-	width: 100%;
-	height: 2em;
-	font-family: monospace;
-	font-size: 150%;
-}	
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    align-items: center;
+    margin: 0.5em 0 0.5em 0;
+    width: 100%;
+    height: 2em;
+    font-family: monospace;
+    font-size: 150%;
+}
 
 #logo {
-	color: #e6db74;
-	padding: 0.5em;
-	font-size: 1.25em;
+    color: #e6db74;
+    padding: 0.5em;
+    font-size: 1.25em;
 
 }
 #logo a { text-decoration: none; }
@@ -49,40 +49,40 @@ a:hover{ color: #e6db74}
 #logo a:hover{ color: #f8f8f2}
 
 #nav {
-	font-family: monospace;
-	font-size: 0.75em;
-	word-spacing: 2ch;
-	padding: 0.5em;
+    font-family: monospace;
+    font-size: 0.75em;
+    word-spacing: 2ch;
+    padding: 0.5em;
 }
 
 /*--- footer ----*/
 
 #footer {
-	padding-top: 1em;
-	color: #75715e;
-	text-align: center;
-	font-size: 0.75em;
+    padding-top: 1em;
+    color: #75715e;
+    text-align: center;
+    font-size: 0.75em;
 }
 
 
 /*--- paste info box ----*/
 
 #info {
-	display: flex;
-	flex-direction: row;
-	flex-wrap: wrap;
-	justify-content: flex-start;
-	align-items: center;
-	border: 3px solid;
-	border-color: #272822;
-	max-height:3em;
-	min-height: 1.5em;
-	padding: 0.3em 3ch 0.3em 3ch;
-	color: #888481;
-	font-size: 0.8em;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    align-items: center;
+    border: 3px solid;
+    border-color: #272822;
+    max-height:3em;
+    min-height: 1.5em;
+    padding: 0.3em 3ch 0.3em 3ch;
+    color: #888481;
+    font-size: 0.8em;
 }
 .pipediv {
-	margin: 0 0.5em 0 0.5em;
+    margin: 0 0.5em 0 0.5em;
 }
 
 #info a:hover{ color: #f92672; }
@@ -90,59 +90,59 @@ a:hover{ color: #e6db74}
 /*--- paste body ----*/
 
 #content {
-	background-color: #272822;
-	padding: 0 0 0.25em 0;
-	overflow-x: auto;
-	
+    background-color: #272822;
+    padding: 0 0 0.25em 0;
+    overflow-x: auto;
+
 }
 
-.linenos { 
-	list-style: decimal;
-	color: #888481;
-	padding: 0;
-	margin: 0em 0.5em 0em 2ch;
-	min-height: 1.25em;
+.linenos {
+    list-style: decimal;
+    color: #888481;
+    padding: 0;
+    margin: 0em 0.5em 0em 2ch;
+    min-height: 1.25em;
 }
 
 .pastelines {
-	white-space: pre;
-	word-wrap: break-word;
-	tab-size: 4;
-	padding: 0;
-	margin: 0;
-	color: #B5AFA3;
+    white-space: pre;
+    word-wrap: break-word;
+    tab-size: 4;
+    padding: 0;
+    margin: 0;
+    color: #B5AFA3;
 
 }
 
 /*--- new paste page ----*/
 
 #pastebox {
-	box-sizing: border-box;
-	resize: vertical;
-	width: 100%;
-	height: auto;
-	min-height: 30em;
-	margin: auto;
-	padding: 0.5em;
-	border: 0;
-	background-color: #272822;
-	color: #B5AFA3;
-	outline-color: #55515e;
+    box-sizing: border-box;
+    resize: vertical;
+    width: 100%;
+    height: auto;
+    min-height: 30em;
+    margin: auto;
+    padding: 0.5em;
+    border: 0;
+    background-color: #272822;
+    color: #B5AFA3;
+    outline-color: #55515e;
 }
 ::selection {
-	color: #49483e;
-	background: #f8f8f2;
+    color: #49483e;
+    background: #f8f8f2;
 }
 #controls {
-	color: #888481;
-	border: 3px solid;
-	border-color: #272822;
-	padding: 0.15em 0.5em 0.15em 0.5em;
-	outline-color: #888481;
+    color: #888481;
+    border: 3px solid;
+    border-color: #272822;
+    padding: 0.15em 0.5em 0.15em 0.5em;
+    outline-color: #888481;
 
 }
 .control-item {
-	margin: 0.25em 0em 0.25em 0em;
+    margin: 0.25em 0em 0.25em 0em;
         color: inherit;
         background-color: #272822;
         border-color: #272822;
@@ -151,61 +151,61 @@ a:hover{ color: #e6db74}
 
 
 #burninput {
-	width: 6ch;
-	border: 0;
-	background-color: #272822;
-	text-align: right;
+    width: 6ch;
+    border: 0;
+    background-color: #272822;
+    text-align: right;
 }
 
 #pastebutton {
-	color: inherit;
-	border: 0;
-	width: 8em;
-	height: 1.5em;
-	outline-color: #f8f8f2;
+    color: inherit;
+    border: 0;
+    width: 8em;
+    height: 1.5em;
+    outline-color: #f8f8f2;
 }
 
 .marker {
-	color: #49483e;
-	background-color: #e6db74;
+    color: #49483e;
+    background-color: #e6db74;
 }
 
 /*--- About pages ----*/
 #about {
-	padding: 2em 2ch 2em 2ch;
-	color: #95917e;
-	background-color: #272822;
-	white-space: normal;
-	font-size: 1em;
-	font-family: monospace;
+    padding: 2em 2ch 2em 2ch;
+    color: #95917e;
+    background-color: #272822;
+    white-space: normal;
+    font-size: 1em;
+    font-family: monospace;
 }
 #about strong{
-	color: #e5e1de;
+    color: #e5e1de;
 }
 
 #about li{
-	color: #e5e1de;
+    color: #e5e1de;
 }
 
 #about #pierce{
-	color: #ffffff;
-	font-weight: bold;
+    color: #ffffff;
+    font-weight: bold;
 }
 /*--- error pages ----*/
 
 #errorpage h1{
-	color: #960050;
+    color: #960050;
 }
 #errorpage {
-	color:  #f8f8f2;
-	text-align: center;
+    color:  #f8f8f2;
+    text-align: center;
 }
 
 /*--- paste deletion confirmation ----*/
 
 #deletepage {
-	color:  #a6e22e;
-	text-align: center;
+    color:  #a6e22e;
+    text-align: center;
 }
 
 /*--- pygments stylesheet ----*/
