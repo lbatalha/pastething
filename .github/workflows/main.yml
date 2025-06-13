@@ -51,13 +51,13 @@ jobs:
           python-version: ${{ matrix.python_version }}
           architecture: ${{ matrix.architecture }}
 
-      - name: Setup PostgreSQL
-        uses: Harmon758/postgresql-action@v1.0.0
+      - uses: ikalnytskyi/action-setup-postgres@v7
         with:
-          postgresql version: 15
+          postgres-version: "17"
+        id: postgres
 
       - name: Setup PSQL
-        run: psql -U postgres -f schema.sql --host=127.0.0.1 --port=5432
+        run: psql ${{ steps.postgres.outputs.connection-uri }} -f schema.sql
       - name: Setup Config
         run: cp config.py.example config.py
       - name: Run Main
