@@ -24,7 +24,7 @@ RUN chown -R app:app /config /app
 
 USER app:app
 
-VOLUME ["/config", "/app/bin/templates", "/app/bin/static"]
+VOLUME ["/config"]
 
 ENV PYTHONUNBUFFERED=1
 
